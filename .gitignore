@@ -1,0 +1,7 @@
+node_modules/
+dist/
+_site/
+pipeline/.page.*
+tools/*.bundle.js
+characters/*/.obj/
+dev/

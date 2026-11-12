@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>BRAWL OUT</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: #000; font-family: 'Arial Black', Impact, 'Segoe UI', sans-serif; color: #f4ead8; user-select: none; }
+  #c { position: fixed; inset: 0; width: 100%; height: 100%; display: block; cursor: crosshair; }
+  #hud { display: none; position: fixed; inset: 0; pointer-events: none; }
+  .bars { position: absolute; left: 24px; top: 16px; width: min(30vw, 300px); }
+  .bar { height: 14px; background: rgba(0,0,0,.55); border: 2px solid rgba(255,255,255,.25); border-radius: 3px; overflow: hidden; margin-top: 6px; transform: skewX(-12deg); }
+  .bar > div { height: 100%; transition: width .12s; }
+  #hpbar { background: #e8443a; width: 100%; box-shadow: 0 0 12px #e8443a; }
+  #focusbar { background: #3fb4ff; width: 100%; box-shadow: 0 0 12px #3fb4ff; }
+  .blabel { font-size: 11px; letter-spacing: 2px; opacity: .8; margin-top: 8px; }
+  #topright { position: absolute; right: 24px; top: 20px; text-align: right; text-shadow: 0 2px 6px #000; }
+  #score { font-size: 34px; }
+  #wave { font-size: 14px; letter-spacing: 3px; color: #ff6a8a; }
+  #combo { font-size: 22px; color: #ffd23f; margin-top: 4px; text-shadow: 0 0 12px #ff8a00; }
+  #cross { position: absolute; left: 50%; top: 50%; width: 6px; height: 6px; margin: -3px; border-radius: 50%; background: rgba(255,255,255,.8); box-shadow: 0 0 4px #000; }
+  #reticle { display: none; position: absolute; width: 56px; height: 56px; margin: -28px; border: 3px solid #6fd3ff; border-radius: 50%; box-shadow: 0 0 14px #3fb4ff, inset 0 0 10px #3fb4ff; transition: transform .08s; }
+  #reticle.on { border-color: #fff; transform: scale(.7); box-shadow: 0 0 22px #fff, inset 0 0 12px #6fd3ff; }
+  #partlabel { position: absolute; left: 50%; top: 64px; transform: translateX(-50%); white-space: nowrap; font-size: 15px; letter-spacing: 3px; color: #fff; text-shadow: 0 0 8px #3fb4ff, 0 2px 4px #000; }
+  #prompts { position: absolute; left: 50%; bottom: 26px; max-width: 96vw; flex-wrap: wrap; justify-content: center; row-gap: 8px; transform: translateX(-50%); display: flex; align-items: center; white-space: nowrap; font-size: 15px; text-shadow: 0 2px 4px #000; }
+  .btn { display: inline-block; min-width: 34px; padding: 4px 9px; margin-right: 8px; border-radius: 8px; background: rgba(255,255,255,.92); color: #111; font-size: 13px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,.6); }
+  .lbl { letter-spacing: 1.5px; }
+  .gap { display: inline-block; width: 26px; }
+  #banner { position: absolute; left: 0; right: 0; top: 26%; text-align: center; opacity: 0; transform: scale(1.6); transition: opacity .15s, transform .25s cubic-bezier(.2,1.6,.4,1); }
+  #banner.show { opacity: 1; transform: scale(1); }
+  #btitle { font-size: clamp(40px, 8vw, 96px); color: #fff; letter-spacing: 4px; text-shadow: 0 0 24px #ff2a6d, 0 0 6px #ff2a6d, 0 6px 0 #5a0018; font-style: italic; }
+  #bsub { font-size: clamp(14px, 2vw, 22px); color: #ffd23f; letter-spacing: 5px; margin-top: 6px; text-shadow: 0 2px 6px #000; }
+  #toast { position: absolute; left: 50%; top: 62%; transform: translateX(-50%); font-size: 16px; letter-spacing: 3px; color: #ffd23f; opacity: 0; transition: opacity .2s; text-shadow: 0 2px 6px #000; white-space: nowrap; }
+  #toast.show { opacity: 1; }
+  #thirdp { display: none; position: absolute; right: 30px; bottom: 90px; align-items: center; padding: 10px 14px; background: rgba(0,0,0,.6); border: 2px solid #ffd23f; border-radius: 10px; font-size: 15px; letter-spacing: 1.5px; animation: pulse .5s infinite alternate; }
+  #thirdp .btn { background: #ffd23f; }
+  @keyframes pulse { to { box-shadow: 0 0 22px #ffd23f; } }
+  #enemyinfo { display: none; position: absolute; left: 50%; top: 22%; transform: translateX(-50%); font-size: 13px; letter-spacing: 3px; text-align: center; text-shadow: 0 2px 4px #000; }
+  .ehp { width: 220px; height: 8px; background: rgba(0,0,0,.6); margin-top: 4px; border: 1px solid rgba(255,255,255,.3); }
+  .ehp > div { height: 100%; background: #ff2a6d; }
+  .screen { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; background: radial-gradient(ellipse at center, rgba(20,6,10,.35), rgba(0,0,0,.85)); cursor: pointer; }
+  #title h1 { font-size: clamp(56px, 12vw, 150px); font-style: italic; letter-spacing: 6px; color: #fff; text-shadow: 0 0 30px #ff2a6d, 0 0 10px #ff2a6d, 0 8px 0 #5a0018; line-height: .95; }
+  #title .tag { font-size: clamp(14px, 2vw, 20px); letter-spacing: 8px; color: #6fe7ff; text-shadow: 0 0 12px #05d9e8; margin: 10px 0 26px; }
+  .controls { display: grid; grid-template-columns: auto auto auto; gap: 6px 22px; font-size: 13px; letter-spacing: 1px; background: rgba(0,0,0,.55); padding: 16px 22px; border-radius: 12px; border: 1px solid rgba(255,255,255,.15); text-align: left; }
+  .controls .h { color: #ffd23f; font-size: 12px; letter-spacing: 3px; }
+  .start { margin-top: 24px; font-size: 22px; letter-spacing: 4px; animation: blink 1s infinite alternate; }
+  @keyframes blink { to { opacity: .35; } }
+  .opts { margin-top: 16px; display: flex; gap: 12px; }
+  .opts button { pointer-events: auto; font: inherit; font-size: 12px; letter-spacing: 2px; padding: 8px 14px; border-radius: 8px; border: 2px solid rgba(255,255,255,.4); background: rgba(0,0,0,.5); color: #fff; cursor: pointer; }
+  #padstatus { margin-top: 12px; font-size: 11px; letter-spacing: 2px; color: #ff8a8a; }
+  #padstatus.ok { color: #7dff9a; }
+  #pause, #over { display: none; }
+  #style { margin-top: 6px; display: flex; flex-direction: column; align-items: flex-end; }
+  #srank { font-size: 46px; font-style: italic; line-height: 1; text-shadow: 0 0 18px currentColor, 0 3px 0 #000; }
+  #srank.pop { animation: rpop .35s cubic-bezier(.2,1.8,.4,1); }
+  @keyframes rpop { from { transform: scale(2.2) rotate(-12deg); } to { transform: scale(1) rotate(0); } }
+  .sbar { width: 90px; height: 5px; background: rgba(0,0,0,.5); margin-top: 3px; border-radius: 3px; overflow: hidden; }
+  #sfill { height: 100%; width: 0; background: linear-gradient(90deg, #ff2a6d, #ffd23f); }
+  #timer { display: none; position: absolute; left: 50%; top: 14px; transform: translateX(-50%); font-size: 30px; letter-spacing: 3px; text-shadow: 0 2px 8px #000; }
+  #timer .low { color: #ff3b3b; animation: blink .4s infinite alternate; }
+  #timer .cash { color: #7dff9a; }
+  #stages { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; justify-content: center; }
+  .stage { pointer-events: auto; font: inherit; min-width: 128px; padding: 10px 12px; border-radius: 10px; border: 2px solid rgba(255,255,255,.25); background: rgba(0,0,0,.55); color: #fff; cursor: pointer; letter-spacing: 2px; }
+  .stage .sn { font-size: 13px; } .stage .ss { color: #ffd23f; font-size: 16px; margin-top: 4px; } .stage .sl { font-size: 9px; opacity: .7; margin-top: 4px; letter-spacing: 1px; }
+  .stage.sel { border-color: #ff2a6d; box-shadow: 0 0 18px #ff2a6d; background: rgba(60,0,20,.6); }
+  .stage.locked { opacity: .5; }
+  @media (max-height: 620px) { #title .controls { display: none; } }
+  @media (max-height: 500px) { #title h1 { font-size: 54px; } #title .tag { margin: 4px 0 8px; } #stages { margin-top: 6px; } .stage { min-width: 100px; padding: 6px 8px; } .start { margin-top: 10px; font-size: 18px; } .opts { margin-top: 8px; } }
+  #over h2, #pause h2 { font-size: clamp(44px, 9vw, 110px); font-style: italic; color: #fff; text-shadow: 0 0 26px #ff2a6d, 0 6px 0 #5a0018; }
+  #overstats { margin-top: 12px; font-size: 18px; letter-spacing: 2px; line-height: 1.8; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="hud">
+  <div id="cross"></div>
+  <div id="reticle"><div id="partlabel"></div></div>
+  <div id="enemyinfo"></div>
+  <div class="bars">
+    <div class="blabel">HEALTH</div><div class="bar"><div id="hpbar"></div></div>
+    <div class="blabel">FOCUS</div><div class="bar"><div id="focusbar"></div></div>
+  </div>
+  <div id="topright"><div id="wave">WAVE 1</div><div id="score">0</div><div id="combo"></div><div id="style"><div id="srank"></div><div class="sbar"><div id="sfill"></div></div></div></div>
+  <div id="timer"></div>
+  <div id="prompts"></div>
+  <div id="thirdp"><span class="btn">Y</span><span class="lbl">WATCH IN 3RD PERSON</span></div>
+  <div id="banner"><div id="btitle"></div><div id="bsub"></div></div>
+  <div id="toast"></div>
+</div>
+<div id="title" class="screen">
+  <h1>BRAWL OUT</h1>
+  <div class="tag">FOR ALL OUT · THE PUB</div>
+  <div class="controls">
+    <div class="h">ACTION</div><div class="h">XBOX</div><div class="h">KEYBOARD</div>
+    <div>Move / Look</div><div>L-Stick / R-Stick</div><div>WASD / Mouse</div>
+    <div>Punch left / right</div><div>LT / RT</div><div>Left / Right click</div>
+    <div>Grab left / right</div><div>LB / RB</div><div>Q / E</div>
+    <div>Focus Grab (slow time)</div><div>Hold A</div><div>Hold F</div>
+    <div>Dodge</div><div>B</div><div>Space</div>
+    <div>Sprint</div><div>Click L-Stick</div><div>Shift</div>
+    <div>Parry (on the red glow)</div><div>X</div><div>R</div>
+    <div>Third person on / off</div><div>Y</div><div>T</div>
+  </div>
+  <div id="stages"></div>
+  <div class="start">CLICK OR PRESS A TO FIGHT</div>
+  <div class="opts"><button id="qbtn">GRAPHICS: HIGH</button><button id="bbtn">BLOOD: ON</button></div>
+  <div id="padstatus">NO CONTROLLER DETECTED – PRESS ANY BUTTON ON IT</div>
+  <div style="margin-top:8px;font-size:11px;opacity:.6;letter-spacing:2px">LB / RB: STAGE · X: GRAPHICS · Y: BLOOD · GRAB BOTH HANDS ON ONE ENEMY TO LIFT HIM</div>
+</div>
+<div id="pause" class="screen"><h2>PAUSED</h2><div class="start">TAP, CLICK OR PRESS START TO CONTINUE</div><div class="opts"><button id="pausemenu">STAGE SELECT</button></div></div>
+<div id="over" class="screen"><h2>BRAWLED OUT</h2><div id="overstats"></div><div class="start">TAP, CLICK OR PRESS A TO BRAWL AGAIN</div><div class="opts"><button id="overmenu">STAGE SELECT</button></div></div>
+<script>/*BUNDLE*/</script>
+</body>
+</html>

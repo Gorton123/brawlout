@@ -1,0 +1,54 @@
+name: Characters
+
+on:
+  push:
+    branches: [main]
+    paths: ['characters/**', 'pipeline/**']
+  workflow_dispatch:
+    inputs:
+      ids:
+        description: 'Character ids to build (blank = all)'
+        required: false
+        default: ''
+      force:
+        description: 'Redo every step even if outputs exist'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: characters
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Build characters
+        run: node pipeline/cbuild.mjs build ${{ github.event.inputs.ids }} ${{ github.event.inputs.force == 'true' && '--force' || '' }}
+      - name: Status summary
+        run: |
+          echo '## Character status' >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          node pipeline/cbuild.mjs status >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+      - name: Commit outputs
+        run: |
+          git config user.name "brawlout-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add characters assets
+          if git diff --cached --quiet; then echo "nothing new"; else git commit -m "characters: pipeline outputs [skip ci]" && git push; fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: character-previews
+          path: characters/**/preview_*.png
+          if-no-files-found: ignore
