@@ -15,5 +15,21 @@
  "unirig_topboy_error_jasongzy": "",
  "unirig_topboy_error_faisal786U": "You have exceeded your free ZeroGPU quota (90s requested vs. 68s left). Try again in 22:40:52. Subscribe to Hugging Face PRO to get 40 min of ZeroGPU quota a day - https://huggingface.co/subscribe/pro?from=ZeroGPU",
  "lion_generate_s": "failed: concept image failed",
- "total_unirig_s": 5653
+ "total_unirig_s": 5653,
+ "momask_jab_s": 6,
+ "momask_hook_s": 11,
+ "momask_uppercut_s": 4,
+ "momask_haymaker_s": 10,
+ "momask_stagger_s": 7,
+ "momask_knockout_s": 11,
+ "momask_dodge_s": 9,
+ "momask_parry_s": 4,
+ "momask_collar_grab_s": 11,
+ "momask_lift_overhead_s": 6,
+ "momask_slam_s": 9,
+ "momask_sword_slash_s": 10,
+ "momask_spear_thrust_s": 10,
+ "momask_drunk_walk_s": 10,
+ "momask_moon_punch_s": 11,
+ "total_momask_s": 129
 }
