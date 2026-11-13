@@ -30,23 +30,7 @@ class Arm {
     this.cuff = new THREE.Mesh(new THREE.CylinderGeometry(0.062, 0.062, 0.08, 12), sleeveMat);
     this.group = new THREE.Group();
     this.wrapMat = wrapMat.clone();
-    const palm = new THREE.Mesh(new RoundedBoxGeometry(0.088, 0.04, 0.095, 2, 0.014), skinMat);
-    this.group.add(palm);
-    const wrap = new THREE.Mesh(new THREE.CylinderGeometry(0.048, 0.046, 0.075, 12), this.wrapMat);
-    wrap.rotation.x = Math.PI / 2; wrap.position.z = 0.06; wrap.scale.set(1, 1, 0.72); this.group.add(wrap);
-    const knuckle = new THREE.Mesh(new RoundedBoxGeometry(0.09, 0.03, 0.03, 1, 0.01), this.wrapMat);
-    knuckle.position.set(0, 0.008, -0.04); this.group.add(knuckle);
-    this.fingers = [];
-    for (let i = 0; i < 4; i++) {
-      const f = new THREE.Group(); f.position.set(-0.031 + i * 0.0205, 0, -0.047);
-      const s1 = new THREE.Mesh(new RoundedBoxGeometry(0.019, 0.021, 0.046, 1, 0.007), skinMat); s1.position.z = -0.022; f.add(s1);
-      const j = new THREE.Group(); j.position.z = -0.045; f.add(j);
-      const s2 = new THREE.Mesh(new RoundedBoxGeometry(0.018, 0.019, 0.036, 1, 0.007), skinMat); s2.position.z = -0.016; j.add(s2);
-      f.userData.j = j; this.group.add(f); this.fingers.push(f);
-    }
-    this.thumb = new THREE.Group(); this.thumb.position.set(-side * 0.046, -0.004, -0.01);
-    const th = new THREE.Mesh(new RoundedBoxGeometry(0.022, 0.022, 0.05, 1, 0.008), skinMat); th.position.z = -0.022; this.thumb.add(th);
-    this.group.add(this.thumb);
+    this.buildHand(skinMat);
     for (const m of [this.upper, this.fore, this.cuff, this.group]) cam.add(m);
     this.body = new CANNON.Body({ mass: 0, type: CANNON.Body.KINEMATIC, shape: new CANNON.Sphere(0.04), collisionFilterGroup: 8, collisionFilterMask: 0 });
     this.body.collisionResponse = false;
@@ -54,20 +38,32 @@ class Arm {
     this.world = new THREE.Vector3();
   }
   get busy() { return this.state !== 'idle'; }
+  // five-finger hand: wrapped palm + knuckles, three-segment fingers, thumb. Curls with this.curl.
+  buildHand(skin) {
+    const side = this.side, g = this.group, wrap = this.wrapMat;
+    const cap = (r, len, mat) => { const m = new THREE.Mesh(new THREE.CapsuleGeometry(r, len, 4, 10), mat); m.rotation.x = Math.PI / 2; m.position.z = -len / 2; return m; };
+    const palm = new THREE.Mesh(new RoundedBoxGeometry(0.084, 0.036, 0.088, 4, 0.016), wrap); palm.position.z = -0.004; g.add(palm);
+    const wrist = new THREE.Mesh(new THREE.CylinderGeometry(0.041, 0.039, 0.07, 16), wrap); wrist.rotation.x = Math.PI / 2; wrist.position.z = 0.062; wrist.scale.set(1, 1, 0.74); g.add(wrist);
+    const knuck = new THREE.Mesh(new RoundedBoxGeometry(0.088, 0.03, 0.026, 2, 0.011), wrap); knuck.position.set(0, 0.004, -0.043); g.add(knuck);
+    this.fingers = [];
+    const L = [[0.027, 0.019, 0.016], [0.03, 0.021, 0.017], [0.028, 0.02, 0.016], [0.022, 0.016, 0.014]]; // index..pinky
+    for (let i = 0; i < 4; i++) {
+      const r = i === 3 ? 0.0082 : 0.0093, [l1, l2, l3] = L[i];
+      const f = new THREE.Group(); f.position.set(side * (0.029 - i * 0.0195), 0, -0.05); f.add(cap(r, l1, skin));
+      const j = new THREE.Group(); j.position.z = -l1 - r * 0.6; f.add(j); j.add(cap(r * 0.95, l2, skin));
+      const k = new THREE.Group(); k.position.z = -l2 - r * 0.6; j.add(k); k.add(cap(r * 0.9, l3, skin));
+      f.userData.j = j; f.userData.k = k; g.add(f); this.fingers.push(f);
+    }
+    this.thumb = new THREE.Group(); this.thumb.position.set(side * 0.04, -0.008, -0.004); g.add(this.thumb);
+    this.thumb.add(cap(0.011, 0.026, skin));
+    const t2 = new THREE.Group(); t2.position.z = -0.032; this.thumb.add(t2); t2.add(cap(0.0105, 0.02, skin)); this.thumb.userData.j = t2;
+    this.group.traverse(o => { if (o.isMesh) o.castShadow = false; });
+  }
   useModel() {
+    // the real model drives the arms; the five-finger hand rides on the model's wrist (FPBody.solveArm)
     this.modelArms = true;
     for (const m of [this.upper, this.fore, this.cuff]) m.visible = false;
-    for (const c of [...this.group.children]) if (!c.userData.prop) this.group.remove(c);
-    const leather = new THREE.MeshPhysicalMaterial({ color: 0x141416, roughness: 0.42, clearcoat: 0.5, clearcoatRoughness: 0.35 });
-    const red = new THREE.MeshPhysicalMaterial({ color: 0xb3121b, roughness: 0.45, clearcoat: 0.4 });
-    const skin = new THREE.MeshStandardMaterial({ color: 0xd2a07a, roughness: 0.6 });
-    this.gloveSkin = skin;
-    const add = (geo, mat, x, y, z, rx = 0, ry = 0, rz = 0, parent = this.group) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.rotation.set(rx, ry, rz); parent.add(m); return m; };
-    // the real model hands (wraps + finger bones) are the fists now; keep an empty pivot for code that expects it
-    this.glove = new THREE.Group(); this.group.add(this.glove);
-    this.thumb = new THREE.Group(); this.glove.add(this.thumb);
-    this.fingers = [];
-    this.group.traverse(o => { if (o.isMesh) o.castShadow = false; });
+    this.glove = null;
   }
   setVisible(v) {
     if (this.modelArms) { this.group.visible = v; if (this.player.fp) this.player.fp.show(v); return; }
@@ -104,8 +100,9 @@ class Arm {
     this.group.position.copy(H);
     this.group.quaternion.setFromRotationMatrix(_m);
     this.group.rotateZ(this.roll);
-    for (const f of this.fingers) { f.rotation.x = -1.45 * this.curl; f.userData.j.rotation.x = -1.7 * this.curl; }
-    if (!this.modelArms) this.thumb.rotation.set(-0.6 * this.curl, this.side * (0.3 + 0.6 * this.curl), 0);
+    const cu = this.prop ? 1 : this.state === 'reach' ? 0.1 : this.curl;
+    for (const f of this.fingers) { f.rotation.x = -1.5 * cu; f.userData.j.rotation.x = -1.65 * cu; if (f.userData.k) f.userData.k.rotation.x = -1.2 * cu; }
+    this.thumb.rotation.set(-0.5 * cu, -this.side * (0.35 + 0.55 * cu), 0); if (this.thumb.userData.j) this.thumb.userData.j.rotation.x = -0.6 * cu;
     this.wrapMat.color.setRGB(0.62 - this.bloody * 0.3, 0.57 - this.bloody * 0.5, 0.48 - this.bloody * 0.42);
     this.group.getWorldPosition(this.world);
   }
@@ -194,10 +191,14 @@ class FPBody {
     this.mixer.update(dt);
     const tp = !!g.tpActive;
     if (B.Head) B.Head.scale.setScalar(tp ? 1 : 0.001);
+    // first person: the shoulders sit behind the camera, so lengthen the arm bones to let punches reach out in front
+    const ARM = tp ? 1 : 1.18;
+    for (const n of ['LeftForeArm', 'LeftHand', 'RightForeArm', 'RightHand']) { const b = B[n]; if (!b) continue; if (!b.userData.bind) b.userData.bind = b.position.clone(); b.position.copy(b.userData.bind).multiplyScalar(ARM); }
+    // first person shows the five-finger code hand on the wrist; the model's own (fused-finger) hand is hidden
     for (const h of [B.LeftHand, B.RightHand]) if (h) h.scale.setScalar(tp ? 1 : 0.001);
     // torso twist into punches / lean
     let tw = 0;
-    for (const a of Object.values(P.arms)) if (a.state === 'punch') { const k = a.t / a.dur; tw += -a.side * 0.35 * (k < 0.35 ? k / 0.35 : Math.max(0, 1 - (k - 0.35) / 0.65)); }
+    for (const a of Object.values(P.arms)) if (a.state === 'punch') { const k = a.t / a.dur; tw += -a.side * 0.16 * (k < 0.35 ? k / 0.35 : Math.max(0, 1 - (k - 0.35) / 0.65)); }
     m.updateMatrixWorld(true);
     if (B.Spine1 && tw) { _dq.setFromAxisAngle(_w1.set(0, 1, 0), tw); B.Spine1.getWorldQuaternion(_wq).premultiply(_dq); B.Spine1.parent.getWorldQuaternion(_wq2); B.Spine1.quaternion.copy(_wq2.invert().multiply(_wq)); B.Spine1.updateWorldMatrix(false, true); }
     for (const arm of Object.values(P.arms)) this.solveArm(arm);
@@ -209,7 +210,8 @@ class FPBody {
     if (!A || !F || !H) return;
     // hand target (camera space -> world). Idle/punch targets are remapped to the model's real arm reach
     const t = new THREE.Vector3().copy(arm.pos);
-    if (!arm.support && (arm.state === 'idle' || arm.state === 'punch' || arm.state === 'recover')) { t.x *= 0.85; t.z = t.z * 0.82; t.y += 0.1; }
+    if (!arm.support && !arm.prop && (arm.state === 'idle' || arm.state === 'punch' || arm.state === 'recover')) { t.x *= 0.95; t.y += 0.14; if (arm.state !== 'punch') t.z *= 0.75; }
+    else if (!arm.support && (arm.state === 'idle' || arm.state === 'punch' || arm.state === 'recover')) { t.x *= 0.85; t.z = t.z * 0.82; t.y += 0.1; }
     t.applyMatrix4(cam.matrixWorld);
     const S = A.getWorldPosition(new THREE.Vector3()), E0 = F.getWorldPosition(new THREE.Vector3()), H0 = H.getWorldPosition(new THREE.Vector3());
     const l1 = S.distanceTo(E0), l2 = E0.distanceTo(H0);
@@ -224,7 +226,7 @@ class FPBody {
     // twist the forearm so the palm faces the right way (fist knuckles forward, open palm toward a grab)
     if (this.palm[side]) {
       const st = arm.state;
-      const pd = (st === 'reach' || st === 'hold' || st === 'lift' || arm.support) ? new THREE.Vector3(-arm.side * 0.35, -0.35, -0.85) : new THREE.Vector3(-arm.side * 0.55, -0.8, 0.05);
+      const pd = (st === 'reach' || st === 'hold' || st === 'lift' || arm.support) ? new THREE.Vector3(-arm.side * 0.35, -0.35, -0.85) : st === 'punch' && !arm.prop ? new THREE.Vector3(-arm.side * 0.3, -1, 0.1) : new THREE.Vector3(-arm.side * 0.9, -0.45, 0.15);
       pd.normalize().applyQuaternion(cam.quaternion);
       const fp = F.getWorldPosition(new THREE.Vector3()), hp = H.getWorldPosition(new THREE.Vector3());
       const axis = hp.sub(fp).normalize();
@@ -255,10 +257,15 @@ class FPBody {
     arm.group.position.copy(hl);
     let z = el.sub(hl).normalize(); // points back along the forearm (local +Z)
     if (arm.prop) { const wy = arm.weaponYaw || 0, wp = arm.weaponPitch || 0; z = new THREE.Vector3(Math.sin(-wy) * Math.cos(wp), -Math.sin(wp), Math.cos(-wy) * Math.cos(wp)).normalize();  }
-    const x = new THREE.Vector3().crossVectors(UP, z).normalize(), y = new THREE.Vector3().crossVectors(z, x);
+    let x, y;
+    if (arm.prop) { x = new THREE.Vector3().crossVectors(UP, z).normalize(); y = new THREE.Vector3().crossVectors(z, x); }
+    else {
+      // back of the fist faces up and slightly out (guard), turning palm-down as the punch extends
+      y = new THREE.Vector3(arm.side * 0.45, 1, 0.35); y.addScaledVector(z, -y.dot(z)).normalize();
+      x = new THREE.Vector3().crossVectors(y, z).normalize();
+    }
     arm.group.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(x, y, z));
-    arm.group.rotateZ(arm.roll);
-    if (arm.glove) arm.glove.rotation.x = arm.prop ? 0 : 0.35 * (arm.state === 'punch' ? 0.2 : 1);
+    if (arm.prop) arm.group.rotateZ(arm.roll);
     arm.world.copy(_w1);
   }
   show(v) { this.model.visible = v; }
@@ -1047,7 +1054,7 @@ export class Player {
           tgt.copy(k < 0.45 ? a.lerp(b, smooth(k / 0.45)) : b.lerp(arm.REST, smooth((k - 0.45) / 0.55)));
         } else {
           const up = arm.heavyTarget && arm.heavyTarget.heldZone === 'head';
-          const ext3 = up ? new THREE.Vector3(s * 0.04, -0.02, -0.7) : new THREE.Vector3(s * 0.06, -0.08, -0.8);
+          const ext3 = up ? new THREE.Vector3(s * 0.1, -0.02, -0.7) : new THREE.Vector3(s * 0.13, -0.08, -0.8);
           tgt.copy(arm.REST).lerp(ext3, ext);
           if (up) tgt.y += (1 - ext) * -0.15;
         }

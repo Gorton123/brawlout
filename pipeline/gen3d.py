@@ -64,8 +64,16 @@ def trellis2(img, out):
     except Exception as e:
         print('  preprocess:', e); img2 = img
     # use the endpoint's defaults for everything except the image
-    r = c.predict(image=handle_file(img2), api_name='/image_to_3d'); print('  image_to_3d ->', str(r)[:300])
-    g = c.predict(api_name='/extract_glb'); print('  extract_glb ->', str(g)[:300])
+    try: r = c.predict(image=handle_file(img2), resolution='512', api_name='/image_to_3d')
+    except Exception as e:
+        if 'quota' in str(e).lower(): raise
+        print('  image_to_3d(512) failed, defaults:', e); r = c.predict(image=handle_file(img2), api_name='/image_to_3d')
+    print('  image_to_3d ->', str(r)[:300])
+    try: g = c.predict(decimation_target=60000, texture_size=1024, api_name='/extract_glb')
+    except Exception as e:
+        if 'quota' in str(e).lower(): raise
+        g = c.predict(api_name='/extract_glb')
+    print('  extract_glb ->', str(g)[:300])
     p = path_of(g)
     if not p or not p.endswith('.glb'): raise RuntimeError('no glb returned')
     shutil.copy(p, out); return True
@@ -81,6 +89,17 @@ def trellis1(img, out, space):
         pre = c.predict(image=handle_file(img), api_name='/preprocess_image'); img2 = path_of(pre) or img
     except Exception as e:
         print('  preprocess:', e); img2 = img
+    # newer community build: one call does generation + GLB extraction
+    try:
+        r = c.predict(image=handle_file(img2), multiimages=[], seed=0, ss_guidance_strength=7.5, ss_sampling_steps=12,
+                      slat_guidance_strength=3, slat_sampling_steps=12, multiimage_algo='stochastic',
+                      mesh_simplify=0.9, texture_size=1024, api_name='/generate_and_extract_glb')
+        print('  generate_and_extract_glb ->', str(r)[:300]); p = None
+        if isinstance(r, (list, tuple)) and len(r) > 2: p = path_of(r[2]) or path_of(r[1])
+        p = p or path_of(r)
+        if p and p.endswith('.glb'): shutil.copy(p, out); return True
+    except ValueError as e:
+        print('  no /generate_and_extract_glb:', e)
     try:
         r = c.predict(image=handle_file(img2), multiimages=[], seed=0, ss_guidance_strength=7.5, ss_sampling_steps=12,
                       slat_guidance_strength=3, slat_sampling_steps=12, multiimage_algo='stochastic', api_name='/image_to_3d')
@@ -106,8 +125,8 @@ def main():
     if not os.path.exists(img) and not concept(desc, img): sys.exit('concept image failed')
     out = os.path.join(d, 'raw.glb')
     ok = False
-    for name, fn in [('TRELLIS.2', lambda: trellis2(img, out)),
-                     ('TRELLIS community', lambda: trellis1(img, out, 'trellis-community/TRELLIS')),
+    for name, fn in [('TRELLIS community', lambda: trellis1(img, out, 'trellis-community/TRELLIS')),
+                     ('TRELLIS.2', lambda: trellis2(img, out)),
                      ('TRELLIS original', lambda: trellis1(img, out, 'JeffreyXiang/TRELLIS'))]:
         for attempt in range(2):
             try:
