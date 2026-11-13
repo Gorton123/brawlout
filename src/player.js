@@ -144,6 +144,16 @@ class FPBody {
     this.model = this.inst.model; g.scene.add(this.model);
     if (!Models.types.hero) for (const m of this.inst.mats) m.color.setRGB(0.75, 0.78, 0.95);
     this.B = this.inst.bones;
+    // first person: don't draw the body close to the camera (hood, neck, chest when looking down)
+    this.clip = { value: 0.3 };
+    for (const mat of this.inst.mats) {
+      mat.onBeforeCompile = sh => {
+        sh.uniforms.uClipR = this.clip;
+        sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vClipW;').replace('#include <project_vertex>', '#include <project_vertex>\nvClipW = (modelMatrix * vec4(transformed, 1.0)).xyz;');
+        sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nvarying vec3 vClipW;\nuniform float uClipR;').replace('void main() {', 'void main() {\n  if (uClipR > 0.0 && distance(vClipW, cameraPosition) < uClipR) discard;');
+      };
+      mat.customProgramCacheKey = () => 'fpclip'; mat.needsUpdate = true;
+    }
     this.mixer = new THREE.AnimationMixer(this.model);
     this.acts = {};
     const upper = /(Hips|Spine|Neck|Head|Shoulder|Arm|ForeArm|Hand)/;
@@ -190,6 +200,7 @@ class FPBody {
     this.mixer.update(dt);
     const tp = !!g.tpActive;
     if (B.Head) B.Head.scale.setScalar(tp ? 1 : 0.001);
+    this.clip.value = tp ? 0 : 0.3;
     // first person: the shoulders sit behind the camera, so lengthen the arm bones to let punches reach out in front
     const ARM = tp ? 1 : 1.18;
     for (const n of ['LeftForeArm', 'LeftHand', 'RightForeArm', 'RightHand']) { const b = B[n]; if (!b) continue; if (!b.userData.bind) b.userData.bind = b.position.clone(); b.position.copy(b.userData.bind).multiplyScalar(ARM); }
@@ -235,7 +246,7 @@ class FPBody {
         cur.normalize(); pd.normalize();
         let ang = Math.acos(Math.max(-1, Math.min(1, cur.dot(pd))));
         if (new THREE.Vector3().crossVectors(cur, pd).dot(axis) < 0) ang = -ang;
-        if (this.noTwistBones) ang = Math.max(-0.6, Math.min(0.6, ang));
+        if (this.noTwistBones) ang = 0; // auto-rigged models have no twist bones: twisting the forearm wrings the skin like a rope (the first-person hand is oriented on its own)
         _dq.setFromAxisAngle(axis, ang);
         F.getWorldQuaternion(_wq); _wq.premultiply(_dq);
         F.parent.getWorldQuaternion(_wq2); F.quaternion.copy(_wq2.invert().multiply(_wq));

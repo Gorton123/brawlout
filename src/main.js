@@ -677,6 +677,9 @@ class Game {
   // ---------------- loop ----------------
   loop(now) {
     requestAnimationFrame(t => this.loop(t));
+    // phones render in half-float: very glossy materials make specular highlights overflow into white flares with black
+    // (NaN) centres, so keep every PBR material at a safe minimum roughness
+    if (!this._safeT || now - this._safeT > 1000) { this._safeT = now; this.scene.traverse(o => { const ms = o.material ? (Array.isArray(o.material) ? o.material : [o.material]) : []; for (const m of ms) if (m.roughness !== undefined && !m.userData.safe) { m.userData.safe = true; if (m.roughness < 0.35) m.roughness = 0.35; } }); }
     let dtR = Math.min(0.05, (now - this.last) / 1000); this.last = now;
     if (this.isTest && this.fixedDt) dtR = this.fixedDt;
     this.time += dtR;
@@ -726,7 +729,9 @@ class Game {
       if (this.player.lift && this.thirdOffer > 0) { this.third.on = true; this.third.endT = 0; this.thirdOffer = 0; }
       else { this.tpManual = !this.tpManual; this.toast(this.tpManual ? 'THIRD PERSON' : 'FIRST PERSON', 0.6); }
     }
-    this.tpActive = this.tpManual && !this.player.lift && this.third.k < 0.05;
+    // in third person, lifts and executions stay third person (cinematic camera) instead of dropping to first person
+    if (this.tpManual && (this.player.lift || this.player.wexec)) { this.third.on = true; this.third.endT = 0; }
+    this.tpActive = this.tpManual && !this.player.lift && !this.player.wexec && this.third.k < 0.05;
     if (this.tpActive) {
       const pose = this.tpPose(), dir = new THREE.Vector3(0, 0, -1).applyQuaternion(pose.q);
       const o = pose.pos.clone().addScaledVector(dir, 1.6);

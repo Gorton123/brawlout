@@ -82,7 +82,7 @@ function fitJoints(P, H) {
     }
     // T-pose (arms level with the shoulders): the row scan finds no hanging arm, so fit the line to every vertex outside the chest
     const tposed = line.length < 8 || Math.abs(tip.y - 0.8 * H) < 0.08 * H && Math.abs(tip.x) > 0.4 * H;
-    if (tposed) { const r = runs(Math.round(0.62 * H / c)).find(([a, b]) => a <= ic && b >= ic); if (r) chestHalf = Math.abs(xOf(side > 0 ? r[1] : r[0])); }
+    if (tposed) { const xs = P.filter(p => p.y > 0.6 * H && p.y < 0.64 * H && Math.abs(p.x) < 0.3 * H).map(p => Math.abs(p.x)).sort((a, b) => a - b); if (xs.length) chestHalf = xs[Math.floor(xs.length * 0.97)]; }
     info[S + 'Armpit'] = armpitY && +(armpitY / H).toFixed(3); info[S + 'Chest'] = +(chestHalf / H).toFixed(3); info[S + 'TPose'] = tposed;
     const use = tposed ? arm.filter(p => side * p.x > chestHalf * 1.15 && p.y > 0.55 * H && side * p.x < side * tip.x - 0.12 * H && p.distanceTo(tip) > 0.12 * H) : line.filter(p => side * p.x < side * tip.x - 0.13 * H);
     const { c: lc, d } = pcaLine(use.length > 4 ? use : line);
@@ -90,7 +90,7 @@ function fitJoints(P, H) {
     const at = x => lc.clone().addScaledVector(d, (x - lc.x) / d.x);
     let sh = at(side * chestHalf * 0.8);
     const shMaxY = J.Neck.y - 0.035 * H;
-    if (sh.y > shMaxY) sh = lc.clone().addScaledVector(d, (shMaxY - lc.y) / d.y);
+    if (sh.y > shMaxY) { if (Math.abs(d.y) > 0.3) sh = lc.clone().addScaledVector(d, (shMaxY - lc.y) / d.y); else sh.y = shMaxY; }
     sh.z = J.Spine2.z;
     // fingertip = the vertex furthest along the arm direction, close to the arm line
     let tipBest = null, tb = -1e9;
@@ -287,6 +287,27 @@ window.autorig = async (meshB64, refB64, opts = {}) => {
     root.add(sm); root.updateMatrixWorld(true); sm.bind(skeleton, sm.matrixWorld);
   }
   root.updateMatrixWorld(true);
+  // T-pose models are re-bound in an A-pose (arms 45 degrees down) so they behave like every other character in the game
+  const lowered = [];
+  for (const S of ['Left', 'Right']) {
+    const a = bones[bi.get(S + 'Arm')], f = bones[bi.get(S + 'ForeArm')]; if (!a || !f) continue;
+    const pa = a.getWorldPosition(V()), d = f.getWorldPosition(V()).sub(pa).normalize();
+    if (d.y > -0.45) {
+      const want = V(d.x, 0, d.z).normalize().multiplyScalar(0.72); want.y = -0.69; want.normalize();
+      const q = new THREE.Quaternion().setFromUnitVectors(d, want), wq = a.getWorldQuaternion(new THREE.Quaternion());
+      const pq = a.parent.getWorldQuaternion(new THREE.Quaternion());
+      a.quaternion.copy(pq.invert().multiply(q.multiply(wq))); lowered.push(S);
+    }
+  }
+  if (lowered.length) {
+    root.updateMatrixWorld(true);
+    root.traverse(o => { if (!o.isSkinnedMesh) return; const pos = o.geometry.attributes.position, v = V();
+      for (let i = 0; i < pos.count; i++) { v.fromBufferAttribute(pos, i); o.applyBoneTransform(i, v); pos.setXYZ(i, v.x, v.y, v.z); }
+      pos.needsUpdate = true; o.geometry.computeVertexNormals(); });
+    skeleton.calculateInverses();
+    root.traverse(o => { if (o.isSkinnedMesh) o.bind(skeleton, o.matrixWorld); });
+    info.reposed = lowered.join('+') + ' arm lowered to A-pose';
+  }
   const buf = await new GLTFExporter().parseAsync(root, { binary: true, onlyVisible: false });
   const J2 = Object.fromEntries(Object.entries(J).map(([k, v]) => [k, v.toArray().map(x => +(x / H).toFixed(3))]));
   return { size: buf.byteLength, H: +H.toFixed(3), info, dom, joints: J2, b64: bufToB64(buf) };
