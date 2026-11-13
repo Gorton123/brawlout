@@ -6,11 +6,13 @@ on:
   workflow_dispatch:
     inputs:
       id:
-        description: 'Character id (e.g. topboy)'
+        description: 'Character id (e.g. topboy), or "queue" to make everything in characters/queue.json'
         required: true
+        default: queue
       description:
-        description: 'What the character looks like'
-        required: true
+        description: 'What the character looks like (not needed for queue)'
+        required: false
+        default: ''
 
 permissions:
   contents: write
@@ -22,7 +24,7 @@ concurrency:
 jobs:
   generate:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -40,11 +42,14 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - name: Orient + auto-rig + previews
-        run: node pipeline/cbuild.mjs build "${{ github.event.inputs.id }}"
+        if: always()
+        run: |
+          ids="${{ github.event.inputs.id }}"; [ "$ids" = queue ] && ids="$(cat characters/.generated 2>/dev/null)"
+          [ -n "$ids" ] && node pipeline/cbuild.mjs build $ids || echo "nothing to build"
       - name: Commit outputs
         if: always()
         run: |
           git config user.name "brawlout-bot"
           git config user.email "actions@users.noreply.github.com"
           git add characters assets
-          if git diff --cached --quiet; then echo "nothing new"; else git commit -m "characters: generated ${{ github.event.inputs.id }} [skip ci]" && git pull --rebase && git push; fi
+          if git diff --cached --quiet; then echo "nothing new"; else git commit -m "characters: generated [skip ci]" && git pull --rebase && git push; fi

@@ -1,0 +1,38 @@
+[
+ {
+  "id": "quick",
+  "description": "Quick Lad, skinny young British lad around 20, grey zip hoodie, navy tracksuit bottoms, white trainers, buzz cut hair, cheeky grin, pub fighter"
+ },
+ {
+  "id": "big",
+  "description": "Big Lad, huge heavyset bald British bouncer in his 40s, black bomber jacket, dark jeans, black boots, thick neck, tattooed forearms, angry face"
+ },
+ {
+  "id": "murmillo",
+  "description": "Roman murmillo gladiator, bronze full-face crested fish helmet with grille visor, leather arm guard on one arm, white loincloth with wide belt, bronze leg greaves, muscular tanned body, barefoot sandals"
+ },
+ {
+  "id": "champion",
+  "description": "Roman champion gladiator boss, giant muscular man, ornate gold armour breastplate, red cape, gold plumed helmet with open face and beard, gold arm and leg guards, battle scars"
+ },
+ {
+  "id": "roadman",
+  "description": "London roadman in his early 20s, black puffer jacket without logos, grey joggers, black trainers, black beanie hat, short beard, Black British man, hard stare"
+ },
+ {
+  "id": "runner",
+  "description": "lean London street runner, dark green hooded tracksuit zipped up, face partly covered by a black bandana, black running trainers, slim athletic build, white British man"
+ },
+ {
+  "id": "grunt",
+  "description": "grey humanoid alien soldier, smooth grey skin, large black almond eyes, segmented dark armour plates on chest and shoulders, three-fingered gloves, sci-fi"
+ },
+ {
+  "id": "skitter",
+  "description": "thin agile humanoid alien, glossy green skin, long thin limbs, small head with four glowing yellow eyes, ridged spine, lightweight sci-fi harness"
+ },
+ {
+  "id": "brute",
+  "description": "hulking humanoid alien brute, massive shoulders, thick purple armoured hide, bone horns on the head and shoulders, glowing orange eyes, heavy armour plates"
+ }
+]

@@ -118,7 +118,21 @@ def trellis1(img, out, space):
 
 def main():
     args = [a for a in sys.argv[1:] if not a.startswith('--')]
-    cid, desc = args[0], (args[1] if len(args) > 1 else '')
+    if args and args[0] == 'queue':
+        # characters/queue.json: [{"id": ..., "description": ...}, ...] - generate every entry without a raw.glb
+        q = json.load(open(os.path.join(ROOT, 'characters', 'queue.json'))); done = []
+        for item in q:
+            if os.path.exists(os.path.join(ROOT, 'characters', item['id'], 'raw.glb')): continue
+            try: one(item['id'], item['description']); done.append(item['id'])
+            except SystemExit as e: print(f"!! {item['id']}: {e}", flush=True)
+            except Exception as e: print(f"!! {item['id']}: {e}", flush=True)
+        print('generated:', ' '.join(done))
+        open(os.path.join(ROOT, 'characters', '.generated'), 'w').write(' '.join(done))
+        return
+    one(args[0], args[1] if len(args) > 1 else '')
+
+
+def one(cid, desc):
     d = os.path.join(ROOT, 'characters', cid); os.makedirs(d, exist_ok=True)
     img = os.path.join(d, 'concept.png')
     if '--image' in sys.argv: shutil.copy(sys.argv[sys.argv.index('--image') + 1], img)
