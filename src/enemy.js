@@ -23,9 +23,9 @@ const V = (base, model, o) => ({ ...BASE[base], kind: base, model, ...o });
 export const TYPES = {
   brawler: V('brawler', 'brawler', {}), quick: V('quick', 'quick', {}), big: V('big', 'big', {}),
   // Rome
-  gladiator: V('brawler', 'brawler', { name: 'GLADIATOR', hp: 110, shield: 4, helmet: 'galea', tint: [1.0, 0.9, 0.8] }),
+  gladiator: V('brawler', 'gladiator', { name: 'GLADIATOR', hp: 110, shield: 4, helmet: 'galea', tint: [1.0, 0.9, 0.8], ownLook: true }),
   murmillo: V('quick', 'quick', { name: 'MURMILLO', hp: 80, helmet: 'murmillo', tint: [1.0, 0.92, 0.85] }),
-  champion: V('big', 'big', { name: 'CHAMPION', hp: 240, shield: 6, helmet: 'galea', gold: true, tint: [1.0, 0.9, 0.8] }),
+  champion: V('big', 'gladiator', { name: 'CHAMPION', hp: 240, shield: 6, helmet: 'galea', gold: true, tint: [1.0, 0.9, 0.8], ownLook: true, lookTint: [1.08, 0.95, 0.7] }),
   // Moon
   grunt: V('brawler', 'grunt', { name: 'ALIEN GRUNT', hp: 100 }),
   skitter: V('quick', 'grunt', { name: 'SKITTER', hp: 65, speed: 2.7, tint: [0.65, 1.0, 0.8] }),
@@ -113,7 +113,9 @@ export class Enemy {
       this.glow = new THREE.Sprite(new THREE.SpriteMaterial({ map: getGlow(), color: 0xff3020, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true }));
       this.glow.scale.setScalar(0.32); this.glow.visible = false; game.scene.add(this.glow);
       this.inst.model.position.copy(pos); this.inst.model.rotation.y = this.yaw;
-      if (T.tint) for (const m of this.inst.mats) m.color.setRGB(...T.tint);
+      const own = T.ownLook && this.inst.modelKey === T.model;
+      const tint = own ? T.lookTint : T.tint;
+      if (tint) for (const m of this.inst.mats) m.color.setRGB(...tint);
       this.play('Walking', 0);
       this.mixer.update(0.01);
     }
@@ -437,7 +439,7 @@ export class Enemy {
     this.beheaded = true;
     this.inst.model.updateMatrixWorld(true);
     const c = instance(this.inst.modelKey); if (!c) return;
-    if (this.T.tint) for (const m of c.mats) m.color.setRGB(...this.T.tint);
+    { const own = this.T.ownLook && c.modelKey === this.T.model, tint = own ? this.T.lookTint : this.T.tint; if (tint) for (const m of c.mats) m.color.setRGB(...tint); }
     for (const [n, b] of Object.entries(c.bones)) { const v = B[n]; if (v) { b.position.copy(v.position); b.quaternion.copy(v.quaternion); b.scale.copy(v.scale); } }
     c.model.position.copy(this.inst.model.position); c.model.quaternion.copy(this.inst.model.quaternion); c.model.scale.copy(this.inst.model.scale);
     c.model.updateMatrixWorld(true);
@@ -494,7 +496,7 @@ export class Enemy {
     const T = this.T, g = this.game; this.gear = [];
     const bronze = new THREE.MeshStandardMaterial({ color: T.gold ? 0xb88a2a : 0x8a6232, metalness: 0.9, roughness: 0.45 });
     const head = this.byName.head, hr = (head.def.sphere || 0.12);
-    if (T.helmet) {
+    if (T.helmet && !(T.ownLook && this.inst && this.inst.modelKey === T.model)) {
       const h = new THREE.Group();
       const dome = new THREE.Mesh(new THREE.SphereGeometry(hr * 1.12, 20, 12, 0, Math.PI * 2, 0, Math.PI * 0.55), bronze); dome.position.y = hr * 0.1; h.add(dome);
       const brim = new THREE.Mesh(new THREE.TorusGeometry(hr * 1.1, hr * 0.08, 6, 24), bronze); brim.rotation.x = Math.PI / 2; brim.position.y = hr * 0.05; h.add(brim);

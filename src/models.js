@@ -17,6 +17,12 @@ const DOWN = new THREE.Vector3(0, -1, 0), UPV = new THREE.Vector3(0, 1, 0);
 
 function b64(b) { const s = atob(b), u = new Uint8Array(s.length); for (let i = 0; i < s.length; i++) u[i] = s.charCodeAt(i); return u.buffer; }
 
+// models are embedded as base64, optionally gzipped ('gz:' prefix) to fit the single-file size limit
+async function unpack(s) {
+  if (!s.startsWith('gz:')) return b64(s);
+  const stream = new Blob([b64(s.slice(3))]).stream().pipeThrough(new DecompressionStream('gzip'));
+  return await new Response(stream).arrayBuffer();
+}
 export function boneMap(root) { const m = {}; root.traverse(o => { if (o.isBone) m[strip(o.name)] = o; }); return m; }
 
 function skinnedBox(root) {
@@ -69,6 +75,30 @@ export function partsWorld(rigParts, bones, out) {
   return out;
 }
 
+// Close the hands into fists in the template's rest pose. Finger tracks are stripped from clips,
+// so fingers stay closed during animations; the first-person body opens them to grab.
+// Each finger bends about the axis perpendicular to its direction and the palm normal
+// (bind pose: palms face the thighs), so it works whatever the bone roll is.
+const FING = ['Index', 'Middle', 'Ring', 'Pinky'];
+export function fistPose(scene, bm, amount = 1) {
+  const axes = {}, wq = new THREE.Quaternion(), a = new THREE.Vector3(), d = new THREE.Vector3(), n = new THREE.Vector3(), p0 = new THREE.Vector3(), p1 = new THREE.Vector3();
+  for (const S of ['Left', 'Right']) {
+    const hand = bm[S + 'Hand']; if (!hand || !bm[S + 'HandMiddle1']) continue;
+    scene.updateMatrixWorld(true);
+    const hips = bm.Hips.getWorldPosition(new THREE.Vector3()), hp = hand.getWorldPosition(new THREE.Vector3());
+    const inward = new THREE.Vector3(hips.x - hp.x, 0, hips.z - hp.z).normalize();
+    const bend = (b, child, ang) => {
+      scene.updateMatrixWorld(true);
+      b.getWorldPosition(p0); if (child) child.getWorldPosition(p1); else { b.parent.getWorldPosition(p1); p1.sub(p0).negate().add(p0); }
+      d.subVectors(p1, p0).normalize(); n.copy(inward).addScaledVector(d, -inward.dot(d)).normalize();
+      a.crossVectors(d, n).normalize(); b.getWorldQuaternion(wq); const al = a.clone().applyQuaternion(wq.invert());
+      axes[strip(b.name)] = al; b.rotateOnAxis(al, ang * amount);
+    };
+    for (const f of FING) for (let i = 1; i <= 3; i++) { const b = bm[S + 'Hand' + f + i]; if (b) bend(b, bm[S + 'Hand' + f + (i + 1)], i === 1 ? 1.45 : 1.6); }
+    for (let i = 2; i <= 3; i++) { const b = bm[S + 'HandThumb' + i]; if (b) bend(b, bm[S + 'HandThumb' + (i + 1)], 0.55); }
+  }
+  scene.updateMatrixWorld(true); return axes;
+}
 function prepare(scene, hipsTarget) {
   const holder = new THREE.Group(); holder.add(scene);
   const box0 = skinnedBox(holder);
@@ -81,6 +111,7 @@ function prepare(scene, hipsTarget) {
   const box = skinnedBox(holder);
   const J = {}; for (const n of ['Hips', 'Spine', 'Spine2', 'Neck', 'Head', 'LeftArm', 'LeftForeArm', 'LeftHand', 'LeftUpLeg', 'LeftLeg', 'LeftFoot']) { J[n] = new THREE.Vector3(); bm[n].getWorldPosition(J[n]); }
   const rig = rigFromJoints(J, box.max.y);
+  const curl = fistPose(scene, bm);
   // pose our rig into the model's bind pose
   const sk = buildRigSkeleton(rig); sk.root.updateMatrixWorld(true);
   const aim = (boneName, from, to) => {
@@ -112,14 +143,14 @@ function prepare(scene, hipsTarget) {
     extra[bone] = { a, b: b2, w, offA: PW[a].quat.clone().invert().multiply(Q), offB: b2 ? PW[b2].quat.clone().invert().multiply(Q) : null };
   }
   holder.traverse(o => { if (o.isSkinnedMesh) { o.castShadow = true; o.receiveShadow = true; o.frustumCulled = false; } });
-  return { template: holder, rig, off, pb, hipsOff, extra, height: box.max.y };
+  return { template: holder, rig, off, pb, hipsOff, extra, height: box.max.y, curl };
 }
 
 export async function loadModels(data, hipsTargets) {
   const L = new GLTFLoader();
   for (const [type, s] of Object.entries(data)) {
     try {
-      const gl = await L.parseAsync(b64(s), '');
+      const gl = await L.parseAsync(await unpack(s), '');
       let skinned = false; gl.scene.traverse(o => { if (o.isSkinnedMesh) skinned = true; });
       if (!skinned) { for (const c of gl.animations) Models.clips[c.name] = c; continue; } // clip library
       Models.types[type] = prepare(gl.scene, hipsTargets[type] || 0.98);
@@ -134,7 +165,7 @@ export async function loadModels(data, hipsTargets) {
     const myHips = boneMap(prof.template).Hips.position.length();
     prof.clips = {};
     for (const [n, c] of Object.entries(prof.own || Models.clips)) {
-      const cc = c.clone(); cc.tracks = cc.tracks.filter(t => names.has(t.name.split('.')[0]));
+      const cc = c.clone(); cc.tracks = cc.tracks.filter(t => names.has(t.name.split('.')[0]) && !/Hand(Thumb|Index|Middle|Ring|Pinky)/.test(t.name));
       cc.tracks = cc.tracks.filter(t => !t.name.endsWith('.position') || (n === 'Getting_Up' && /Hips\.position$/.test(t.name)));
       if (!prof.own) for (const t of cc.tracks) if (t.name.endsWith('.position')) { t.values = t.values.slice(); for (let i = 0; i < t.values.length; i++) t.values[i] *= myHips / refHips; }
       prof.clips[n] = cc;

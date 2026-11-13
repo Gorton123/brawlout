@@ -63,24 +63,9 @@ class Arm {
     const skin = new THREE.MeshStandardMaterial({ color: 0xd2a07a, roughness: 0.6 });
     this.gloveSkin = skin;
     const add = (geo, mat, x, y, z, rx = 0, ry = 0, rz = 0, parent = this.group) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.rotation.set(rx, ry, rz); parent.add(m); return m; };
-    // glove pivot lets the fist bend at the wrist. Smooth, rounded boxing glove (no exposed fingers)
-    this.glove = new THREE.Group(); this.glove.scale.setScalar(0.84); this.group.add(this.glove);
-    const G = this.glove, sd = this.side;
-    const ball = (sx, sy, sz, x, y, z, mat, parent = G) => { const m = new THREE.Mesh(new THREE.SphereGeometry(1, 28, 20), mat); m.scale.set(sx, sy, sz); m.position.set(x, y, z); parent.add(m); return m; };
-    // main fist + knuckle padding
-    ball(0.053, 0.047, 0.066, 0, 0.004, -0.07, leather);
-    ball(0.055, 0.044, 0.04, 0, 0.012, -0.112, leather);
-    ball(0.045, 0.03, 0.05, 0, -0.022, -0.085, leather);
-    // red striking-surface stripe on the back of the hand
-    const stripe = ball(0.024, 0.01, 0.045, 0, 0.046, -0.078, red); stripe.rotation.x = 0.12;
-    // thumb tucked along the side
-    const th = this.thumb = new THREE.Group(); th.position.set(-sd * 0.044, -0.012, -0.048); G.add(th);
-    const tm = new THREE.Mesh(new THREE.CapsuleGeometry(0.017, 0.045, 6, 14), leather); tm.rotation.set(Math.PI / 2, 0, 0); tm.position.z = -0.03; th.add(tm);
-    th.rotation.set(0, sd * 0.35, 0);
-    // padded cuff + red band
-    const cuff = new THREE.Mesh(new THREE.CylinderGeometry(0.047, 0.042, 0.09, 24), leather); cuff.rotation.x = Math.PI / 2; cuff.position.z = 0.02; G.add(cuff);
-    const band = new THREE.Mesh(new THREE.TorusGeometry(0.046, 0.009, 10, 28), red); band.position.z = 0.0; G.add(band);
-    const band2 = new THREE.Mesh(new THREE.TorusGeometry(0.044, 0.006, 8, 28), red); band2.position.z = 0.055; G.add(band2);
+    // the real model hands (wraps + finger bones) are the fists now; keep an empty pivot for code that expects it
+    this.glove = new THREE.Group(); this.group.add(this.glove);
+    this.thumb = new THREE.Group(); this.glove.add(this.thumb);
     this.fingers = [];
     this.group.traverse(o => { if (o.isMesh) o.castShadow = false; });
   }
@@ -142,6 +127,7 @@ export const WEXEC = {
 export function wexecSpec(type, zone) { const X = WEXEC[type]; return X ? (zone === 'head' ? X.head : X.body) : null; }
 const TWO_HANDED = new Set(['cue', 'stool', 'halfcue', 'spear']);
 const FINGERS = ['Index', 'Middle', 'Ring', 'Pinky'];
+const strip = n => n.replace(/^mixamorig\d*[:_]?/, '');
 const _w1 = new THREE.Vector3(), _w2 = new THREE.Vector3(), _w3 = new THREE.Vector3(), _wq = new THREE.Quaternion(), _wq2 = new THREE.Quaternion(), _dq = new THREE.Quaternion();
 function aimBone(bone, child, target) {
   bone.getWorldPosition(_w1); child.getWorldPosition(_w2);
@@ -256,10 +242,11 @@ class FPBody {
       }
     }
     // fingers curl into a fist / open to grab
-    const c = 0;
-    const AX = [1, 0, 0];
-    for (const f of this.fingers[side]) { f.b.quaternion.copy(f.rest).multiply(_dq.setFromAxisAngle(_w1.set(AX[0], AX[1], AX[2]), (side === 'L' ? 1 : -1) * c * (f.i === 1 ? 1.6 : 1.85))); }
-    for (const f of this.thumbs[side]) { f.b.quaternion.copy(f.rest).multiply(_dq.setFromAxisAngle(_w1.set(0, 0, 1), (side === 'L' ? 1 : -1) * c * 0.5)); }
+    // rest pose is a fist (models.js fistPose); open the hand as arm.curl drops toward 0 (reaching to grab)
+    const AXS = this.inst.prof.curl || {};
+    const open = arm.prop ? 0.25 : arm.state === 'reach' ? 1 : Math.max(0, Math.min(1, 1 - arm.curl));
+    for (const f of this.fingers[side]) { const ax = AXS[strip(f.b.name)]; if (ax) f.b.quaternion.copy(f.rest).multiply(_dq.setFromAxisAngle(ax, -open * (f.i === 1 ? 1.35 : 1.5))); }
+    for (const f of this.thumbs[side]) { const ax = AXS[strip(f.b.name)]; if (ax) f.b.quaternion.copy(f.rest).multiply(_dq.setFromAxisAngle(ax, -open * 0.5)); }
     H.updateWorldMatrix(false, true);
     // move the (invisible) code hand anchor onto the real hand so held props follow it
     H.getWorldPosition(_w1);

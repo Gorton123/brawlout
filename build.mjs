@@ -1,9 +1,10 @@
 import { build } from 'esbuild';
 import fs from 'fs';
+import zlib from 'zlib';
 const r = await build({ entryPoints: ['src/main.js'], bundle: true, minify: true, format: 'iife', write: false, target: 'es2020', legalComments: 'none' });
 const js = r.outputFiles[0].text.replace(/<\/script/g, '<\\/script');
 const models = {};
-for (const n of ['clips', 'brawler', 'hero', 'quick', 'big', 'grunt']) if (fs.existsSync(`assets/${n}.glb`)) models[n] = fs.readFileSync(`assets/${n}.glb`).toString('base64');
+for (const n of ['clips', 'brawler', 'hero', 'quick', 'big', 'grunt', 'gladiator']) if (fs.existsSync(`assets/${n}.glb`)) models[n] = 'gz:' + zlib.gzipSync(fs.readFileSync(`assets/${n}.glb`), { level: 9 }).toString('base64');
 const modelJs = 'window.__MODELS=' + JSON.stringify(models) + ';';
 const html = fs.readFileSync('template.html', 'utf8').replace('/*BUNDLE*/', () => modelJs + '\n' + js);
 fs.mkdirSync('dist', { recursive: true });

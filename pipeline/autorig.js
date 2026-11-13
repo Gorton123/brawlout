@@ -11,6 +11,7 @@ window.inspectRig = async (b64) => {
 };
 
 import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js';
+import { fistPose } from '../src/models.js';
 import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
 const bufToB64 = buf => { const b = new Uint8Array(buf); let s = ''; for (let i = 0; i < b.length; i += 0x8000) s += String.fromCharCode.apply(null, b.subarray(i, i + 0x8000)); return btoa(s); };
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
@@ -84,13 +85,19 @@ function fitJoints(P, H) {
     const { c: lc, d } = pcaLine(use.length > 4 ? use : line);
     if (side * d.x < 0) d.negate();
     const at = x => lc.clone().addScaledVector(d, (x - lc.x) / d.x);
-    const sh = at(side * chestHalf * 0.8);
+    let sh = at(side * chestHalf * 0.8);
+    const shMaxY = J.Neck.y - 0.035 * H;
+    if (sh.y > shMaxY) sh = lc.clone().addScaledVector(d, (shMaxY - lc.y) / d.y);
     sh.z = J.Spine2.z;
-    const tipOnLine = at(tip.x);
-    const wrist = tipOnLine.clone().addScaledVector(d, -0.1 * H);
+    // fingertip = the vertex furthest along the arm direction, close to the arm line
+    let tipBest = null, tb = -1e9;
+    for (const p of arm) { if (side * p.x < chestHalf) continue; const rel = p.clone().sub(lc), t = rel.dot(d); const off = rel.addScaledVector(d, -t).length(); if (off < 0.09 * H && t > tb) { tb = t; tipBest = p; } }
+    const tip2 = tipBest || tip;
+    const tipOnLine = lc.clone().addScaledVector(d, tb);
+    const wrist = tipOnLine.clone().addScaledVector(d, -0.105 * H);
     const near = (q, r) => { const pts = P.filter(p => p.distanceTo(q) < r && side * p.x > chestHalf); return pts.length > 5 ? centroid(pts) : q; };
     const w2 = near(wrist, 0.035 * H), el = near(sh.clone().lerp(w2, 0.5), 0.045 * H);
-    J[S + 'Arm'] = sh; J[S + 'ForeArm'] = el; J[S + 'Hand'] = w2; J[S + 'HandTip'] = tip.clone();
+    J[S + 'Arm'] = sh; J[S + 'ForeArm'] = el; J[S + 'Hand'] = w2; J[S + 'HandTip'] = tip2.clone();
     J[S + 'Shoulder'] = new THREE.Vector3(side * Math.abs(sh.x) * 0.34, J.Spine2.y + (J.Neck.y - J.Spine2.y) * 0.8, J.Spine2.z);
   }
   return { J, info, hipY };
@@ -101,10 +108,13 @@ const MAIN_CHILD = { Hips: 'Spine', Spine: 'Spine1', Spine1: 'Spine2', Spine2: '
   RightShoulder: 'RightArm', RightArm: 'RightForeArm', RightForeArm: 'RightHand', RightHand: 'RightHandTip',
   LeftUpLeg: 'LeftLeg', LeftLeg: 'LeftFoot', LeftFoot: 'LeftToeBase', LeftToeBase: 'LeftToeTip',
   RightUpLeg: 'RightLeg', RightLeg: 'RightFoot', RightFoot: 'RightToeBase', RightToeBase: 'RightToeTip' };
+const FING = ['Thumb', 'Index', 'Middle', 'Ring', 'Pinky'];
+for (const S of ['Left', 'Right']) for (const f of FING) { MAIN_CHILD[S + 'Hand' + f + '1'] = S + 'Hand' + f + '2'; MAIN_CHILD[S + 'Hand' + f + '2'] = S + 'Hand' + f + '3'; MAIN_CHILD[S + 'Hand' + f + '3'] = S + 'Hand' + f + '3Tip'; }
 const KEEP = new Set(Object.keys(MAIN_CHILD));
+const isFinger = n => /Hand(Thumb|Index|Middle|Ring|Pinky)/.test(n);
 // bone radius as fraction of height (for distance normalisation)
 const RAD = { Hips: 0.1, Spine: 0.11, Spine1: 0.115, Spine2: 0.12, Neck: 0.04, Head: 0.07, LeftShoulder: 0.06, RightShoulder: 0.06,
-  LeftArm: 0.04, RightArm: 0.04, LeftForeArm: 0.033, RightForeArm: 0.033, LeftHand: 0.03, RightHand: 0.03,
+  LeftArm: 0.04, RightArm: 0.04, LeftForeArm: 0.033, RightForeArm: 0.033, LeftHand: 0.016, RightHand: 0.016,
   LeftUpLeg: 0.07, RightUpLeg: 0.07, LeftLeg: 0.05, RightLeg: 0.05, LeftFoot: 0.035, RightFoot: 0.035, LeftToeBase: 0.03, RightToeBase: 0.03 };
 
 function segDist(p, a, b) { const ab = b.clone().sub(a), t = Math.max(0, Math.min(1, p.clone().sub(a).dot(ab) / ab.lengthSq())); return { d: p.distanceTo(a.clone().addScaledVector(ab, t)), t }; }
@@ -167,7 +177,43 @@ window.autorig = async (meshB64, refB64, opts = {}) => {
   for (const o of dead) o.parent && o.parent.remove(o);
   // ref world rotations + directions to main child (before we edit anything)
   const refQ = {}, refDir = {};
-  for (const n of KEEP) { const b = rb[n]; if (!b) continue; refQ[n] = b.getWorldQuaternion(new THREE.Quaternion()); const c = rb[MAIN_CHILD[n]]; if (c) refDir[n] = c.getWorldPosition(V()).sub(b.getWorldPosition(V())).normalize(); }
+  // ----- fingers: copy the reference hand layout into the fitted hand, then snap joints onto the mesh
+  for (const S of ['Left', 'Right']) {
+    const rh = rb[S + 'Hand']; if (!rh || !rb[S + 'HandMiddle3']) continue;
+    const rp = n => rb[n].getWorldPosition(V());
+    const tipOf = f => { const a = rp(S + 'Hand' + f + '2'), b = rp(S + 'Hand' + f + '3'); return b.clone().addScaledVector(b.clone().sub(a), 0.9); };
+    const rH = rp(S + 'Hand'), rTip = tipOf('Middle'), rDir = rTip.clone().sub(rH).normalize();
+    const tH = JW[S + 'Hand'], tTip = JW[S + 'HandTip'], tDir = tTip.clone().sub(tH).normalize();
+    // fingers from the geometry: slice the hand along its axis and split the finger zone into four bands
+    const wr = J[S + 'Hand'], tp = J[S + 'HandTip'], ax = tp.clone().sub(wr), Lh = ax.length(); ax.normalize();
+    const hv = P.filter(p => { const t = p.clone().sub(wr).dot(ax); return t > -0.02 * H && t < Lh * 1.05 && p.distanceTo(wr) < Lh * 1.3 && Math.sign(p.x) === (S === 'Left' ? 1 : -1); });
+    // width direction = biggest spread across the axis; thumb sits on the forward (+z) side
+    const perp = hv.map(p => { const r = p.clone().sub(wr); return r.addScaledVector(ax, -r.dot(ax)); });
+    const { d: wd0 } = pcaLine(perp.map(v => v.clone()).concat([V(0, 0, 0)]));
+    const wd = wd0.clone().addScaledVector(ax, -wd0.dot(ax)).normalize(); if (wd.z < 0) wd.negate();
+    const tw = hv.map(p => { const r = p.clone().sub(wr); return { p, t: r.dot(ax) / Lh, w: r.dot(wd) }; });
+    const zone = tw.filter(o => o.t > 0.55 && o.t < 0.98);
+    const wmin = Math.min(...zone.map(o => o.w)), wmax = Math.max(...zone.map(o => o.w));
+    // bands: pinky (most -w) .. index (most +w, next to the thumb)
+    const order = ['Pinky', 'Ring', 'Middle', 'Index'], bw = (wmax - wmin) / 4;
+    const at = (list, t0) => { const sl = list.filter(o => Math.abs(o.t - t0) < 0.06); return sl.length ? centroid(sl.map(o => o.p)) : null; };
+    order.forEach((f, k) => {
+      const band = tw.filter(o => o.w >= wmin + k * bw - 0.1 * bw && o.w <= wmin + (k + 1) * bw + 0.1 * bw);
+      const tmax = Math.max(...band.filter(o => o.t < 1.05).map(o => o.t), 0.8);
+      const t1 = 0.42, len = tmax - t1;
+      const pts = [t1, t1 + len * 0.42, t1 + len * 0.72, tmax - 0.02].map((t, i) => at(band, t) || wr.clone().addScaledVector(ax, t * Lh).addScaledVector(wd, (wmin + (k + 0.5) * bw)));
+      ['1', '2', '3', '3Tip'].forEach((suf, i) => { J[S + 'Hand' + f + suf] = pts[i]; JW[S + 'Hand' + f + suf] = pts[i].clone().applyMatrix4(T); });
+    });
+    // thumb: furthest point on the thumb side in the lower half of the hand
+    const th = tw.filter(o => o.t > 0.1 && o.t < 0.75 && o.w > wmax * 0.6);
+    const ttip = th.length ? th.reduce((m, o) => (o.w + o.t * 0.5 * (wmax - wmin)) > (m.w + m.t * 0.5 * (wmax - wmin)) ? o : m, th[0]).p : wr.clone().addScaledVector(ax, 0.5 * Lh).addScaledVector(wd, wmax);
+    const t1p = wr.clone().addScaledVector(ax, 0.12 * Lh).addScaledVector(wd, wmax * 0.35);
+    [['1', 0], ['2', 0.4], ['3', 0.72], ['3Tip', 1]].forEach(([suf, f]) => { const q = t1p.clone().lerp(ttip, f); J[S + 'HandThumb' + suf] = q; JW[S + 'HandThumb' + suf] = q.clone().applyMatrix4(T); });
+    J[S + 'HandTip'] = J[S + 'HandMiddle3Tip']; JW[S + 'HandTip'] = JW[S + 'HandMiddle3Tip'];
+    refDir[S + 'Hand'] = rDir; // hand bone aims at the middle fingertip
+    for (const f of FING) refDir[S + 'Hand' + f + '3'] = rp(S + 'Hand' + f + '3').sub(rp(S + 'Hand' + f + '2')).normalize();
+  }
+  for (const n of KEEP) { const b = rb[n]; if (!b) continue; refQ[n] = b.getWorldQuaternion(new THREE.Quaternion()); const c = rb[MAIN_CHILD[n]]; if (c && !refDir[n]) refDir[n] = c.getWorldPosition(V()).sub(b.getWorldPosition(V())).normalize(); }
   // set bones top-down: world pos = fitted joint, world rot = ref rot swung onto the fitted direction
   const order = []; (function walk(b) { if (b.isBone && KEEP.has(strip(b.name))) order.push(b); for (const c of b.children) walk(c); })(rs);
   const worldM = new Map();
@@ -191,7 +237,7 @@ window.autorig = async (meshB64, refB64, opts = {}) => {
   const bones = order, bi = new Map(bones.map((b, i) => [strip(b.name), i]));
 
   // ----- skin weights
-  const seg = bones.map(b => { const n = strip(b.name); return { n, a: J[n], b: J[MAIN_CHILD[n]] || J[n].clone().add(V(0, 0.02 * H, 0)), r: (RAD[n] || 0.05) * H, parent: b.parent.isBone ? strip(b.parent.name) : null }; });
+  const seg = bones.map(b => { const n = strip(b.name); return { n, a: J[n], b: (/Hand$/.test(n) && J[n + 'Middle1']) || J[MAIN_CHILD[n]] || J[n].clone().add(V(0, 0.02 * H, 0)), r: (RAD[n] || (isFinger(n) ? 0.011 : 0.05)) * H, parent: b.parent.isBone ? strip(b.parent.name) : null }; });
   const kids = {}; for (const sg of seg) if (sg.parent) (kids[sg.parent] ||= []).push(sg.n);
   const segOf = Object.fromEntries(seg.map(sg => [sg.n, sg]));
   let offset = 0; const out = [];
@@ -205,12 +251,16 @@ window.autorig = async (meshB64, refB64, opts = {}) => {
         // side gating: limbs only take vertices on their own side
         if (/^Left/.test(sg.n) && p.x < -0.01 * H) continue; if (/^Right/.test(sg.n) && p.x > 0.01 * H) continue;
         if (/(UpLeg|Leg|Foot|Toe)/.test(sg.n) && p.y > J.Hips.y + 0.02 * H) continue;
+        if (isFinger(sg.n) && p.distanceTo(J[sg.n.startsWith('Left') ? 'LeftHand' : 'RightHand']) > 0.16 * H) continue;
         if (/(Arm|Hand)$/.test(sg.n) && Math.abs(p.x) < 0.8 * Math.abs(J.LeftArm.x)) continue;
         const d = segDist(p, sg.a, sg.b).d / sg.r; if (d < bd) { bd = d; best = sg; }
       }
       const gp = best.parent && segOf[best.parent] ? segOf[best.parent].parent : null;
       const cand = [best.n, ...(best.parent ? [best.parent] : []), ...(gp && /Shoulder|Arm$/.test(best.n) ? [gp] : []), ...(kids[best.n] || [])];
       const ws = cand.map(n => { const sg = segOf[n]; const d = segDist(p, sg.a, sg.b).d / sg.r; return [n, 1 / Math.pow(d + 0.25, 6)]; }).sort((a, b) => b[1] - a[1]).slice(0, 4);
+      let ws2 = ws;
+      // head + jaw move as one: blend Neck -> Head by height so the face never shears
+      if ((best.n === 'Neck' || best.n === 'Head' || (p.y > J.Neck.y && /^Spine|Shoulder/.test(best.n))) && Math.abs(p.x) < 0.12 * H) { const g = J.Head.y - J.Neck.y, t = Math.max(0, Math.min(1, (p.y - (J.Neck.y + 0.15 * g)) / (0.45 * g))); const hw = t * t * (3 - 2 * t); ws.length = 0; ws.push(['Head', hw + 1e-6], ['Neck', 1 - hw + 1e-6]); }
       const tot = ws.reduce((a, w) => a + w[1], 0);
       ws.forEach(([n, w], k) => { SI[i * 4 + k] = bi.get(n); SW[i * 4 + k] = w / tot; });
     }
@@ -218,6 +268,7 @@ window.autorig = async (meshB64, refB64, opts = {}) => {
     smoothWeights(m.geometry, SI, SW, bones.length, opts.smooth ?? 4);
     out.push({ m, SI, SW });
   }
+  const dom = {}; for (const { SI, SW } of out) for (let i = 0; i < SW.length / 4; i++) { const n = strip(bones[SI[i * 4]].name); dom[n] = (dom[n] || 0) + 1; }
   // build skinned meshes in the reference frame
   const skeleton = new THREE.Skeleton(bones);
   const root = new THREE.Group(); root.name = 'Character';
@@ -235,5 +286,41 @@ window.autorig = async (meshB64, refB64, opts = {}) => {
   root.updateMatrixWorld(true);
   const buf = await new GLTFExporter().parseAsync(root, { binary: true, onlyVisible: false });
   const J2 = Object.fromEntries(Object.entries(J).map(([k, v]) => [k, v.toArray().map(x => +(x / H).toFixed(3))]));
-  return { size: buf.byteLength, H: +H.toFixed(3), info, joints: J2, b64: bufToB64(buf) };
+  return { size: buf.byteLength, H: +H.toFixed(3), info, dom, joints: J2, b64: bufToB64(buf) };
+};
+
+// close-up of one hand (optionally posed by a clip) for checking finger rigs
+window.previewHand = async (b64, libB64, clip, t, side = 'Right', curl = 0) => {
+  const g = await new GLTFLoader().parseAsync(b64ToBuf(b64), '');
+  document.body.innerHTML = '';
+  const r = new THREE.WebGLRenderer({ antialias: true }); r.setSize(400, 520); document.body.appendChild(r.domElement);
+  const sc = new THREE.Scene(); sc.background = new THREE.Color(0x6a6f78);
+  sc.add(new THREE.HemisphereLight(0xffffff, 0x404040, 2.2)); const d = new THREE.DirectionalLight(0xffffff, 2); d.position.set(1, 2, 3); sc.add(d);
+  sc.add(g.scene);
+  let clipObj = g.animations.find(a => a.name === clip);
+  if (!clipObj && libB64 && clip) { const lib = await new GLTFLoader().parseAsync(b64ToBuf(libB64), ''); clipObj = lib.animations.find(a => a.name === clip); }
+  const bm = {}; g.scene.traverse(o => { if (o.isBone) bm[strip(o.name)] = o; });
+  if (curl !== 9) fistPose(g.scene, bm); // same as the game: fists in the rest pose, finger tracks stripped from clips
+  if (clipObj) { const cc = clipObj.clone(); cc.tracks = cc.tracks.filter(tr => !/Hand(Thumb|Index|Middle|Ring|Pinky)/.test(tr.name)); const mx = new THREE.AnimationMixer(g.scene); mx.clipAction(cc).play(); mx.setTime(t || 0); }
+  if (curl === 9) { // debug: show joints as dots, no fist
+    for (const [n, b] of Object.entries(bm)) if (/Hand/.test(n)) { const m = new THREE.Mesh(new THREE.SphereGeometry(1, 8, 6), new THREE.MeshBasicMaterial({ color: /Thumb/.test(n) ? 0x00ff00 : /Index/.test(n) ? 0xff0000 : /Middle/.test(n) ? 0x0000ff : /Ring/.test(n) ? 0xffff00 : /Pinky/.test(n) ? 0xff00ff : 0xffffff, depthTest: false })); m.renderOrder = 9; m.scale.setScalar(0.35); sc.add(m); b.getWorldPosition(m.position); }
+  }
+  if (curl) for (const f of ['Index', 'Middle', 'Ring', 'Pinky']) for (const i of [1, 2, 3]) { const b = bm[side + 'Hand' + f + i]; if (b) b.rotateX(curl * 1.4); }
+  g.scene.updateMatrixWorld(true);
+  const hand = bm[side + 'Hand'], c = hand.getWorldPosition(V()), mid = bm[side + 'HandMiddle2'] ? bm[side + 'HandMiddle2'].getWorldPosition(V()) : c;
+  const L = c.distanceTo(mid) * 4;
+  const cam = new THREE.PerspectiveCamera(35, 400 / 520, L * 0.01, L * 100);
+  cam.position.set(mid.x + (side === 'Left' ? 1 : -1) * L * 0.9, mid.y + L * 0.4, mid.z + L * 1.6); cam.lookAt(mid);
+  r.render(sc, cam); return { bones: Object.keys(bm).length };
+};
+window.weightsAt = async (b64, qx, qy, qz, r) => {
+  const g = await new GLTFLoader().parseAsync(b64ToBuf(b64), ''); g.scene.updateMatrixWorld(true);
+  let sm; g.scene.traverse(o => { if (o.isSkinnedMesh) sm = o; });
+  const pos = sm.geometry.attributes.position, si = sm.geometry.attributes.skinIndex, sw = sm.geometry.attributes.skinWeight;
+  const box = new THREE.Box3().setFromObject(sm), H = box.max.y - box.min.y, v = V();
+  // query given as fractions of height relative to (centre x, min y, max z)
+  const c = V((box.min.x + box.max.x) / 2 + qx * H, box.min.y + qy * H, box.max.z + qz * H);
+  const res = {};
+  for (let i = 0; i < pos.count; i++) { v.fromBufferAttribute(pos, i).applyMatrix4(sm.matrixWorld); if (v.distanceTo(c) > r * H) continue; for (let k = 0; k < 4; k++) { const w = sw.getComponent(i, k); if (w > 0.05) { const n = strip(sm.skeleton.bones[si.getComponent(i, k)].name); res[n] = (res[n] || 0) + w; } } }
+  return res;
 };
