@@ -33,7 +33,7 @@ export const TYPES = {
   // Street
   roadman: V('brawler', 'brawler', { name: 'ROADMAN', hp: 100, hood: true, tint: [0.42, 0.44, 0.5] }),
   runner: V('quick', 'quick', { name: 'RUNNER', hp: 70, hood: true, tint: [0.5, 0.5, 0.58] }),
-  topboy: V('big', 'big', { name: 'TOP BOY', hp: 230, tint: [0.55, 0.55, 0.62], chain: true }),
+  topboy: V('big', 'topboy', { name: 'TOP BOY', hp: 230, tint: [0.55, 0.55, 0.62], chain: true, ownLook: true, scale: 1.08 }),
 };
 for (const t of Object.values(TYPES)) if (t.model === 'grunt' && !t.tint) t.tint = [1, 1, 1];
 
@@ -512,7 +512,7 @@ export class Enemy {
       hood.scale.set(1, 1.05, 1.1); const hg = new THREE.Group(); hood.position.set(0, hr * 0.05, -hr * 0.15); hg.add(hood); g.scene.add(hg);
       this.gear.push({ obj: hg, part: 'head', off: new THREE.Vector3() });
     }
-    if (T.chain) {
+    if (T.chain && !(T.ownLook && this.inst && this.inst.modelKey === T.model)) {
       const ch = new THREE.Mesh(new THREE.TorusGeometry(0.13, 0.014, 8, 24), new THREE.MeshStandardMaterial({ color: 0xe8c050, metalness: 1, roughness: 0.2 }));
       ch.rotation.x = 1.25; const cg = new THREE.Group(); ch.position.set(0, 0.12, 0.06); cg.add(ch); g.scene.add(cg);
       this.gear.push({ obj: cg, part: 'torso', off: new THREE.Vector3() });

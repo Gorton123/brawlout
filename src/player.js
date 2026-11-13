@@ -43,7 +43,6 @@ class Arm {
     const side = this.side, g = this.group, wrap = this.wrapMat;
     const cap = (r, len, mat) => { const m = new THREE.Mesh(new THREE.CapsuleGeometry(r, len, 4, 10), mat); m.rotation.x = Math.PI / 2; m.position.z = -len / 2; return m; };
     const palm = new THREE.Mesh(new RoundedBoxGeometry(0.084, 0.036, 0.088, 4, 0.016), wrap); palm.position.z = -0.004; g.add(palm);
-    const wrist = new THREE.Mesh(new THREE.CylinderGeometry(0.041, 0.039, 0.07, 16), wrap); wrist.rotation.x = Math.PI / 2; wrist.position.z = 0.062; wrist.scale.set(1, 1, 0.74); g.add(wrist);
     const knuck = new THREE.Mesh(new RoundedBoxGeometry(0.088, 0.03, 0.026, 2, 0.011), wrap); knuck.position.set(0, 0.004, -0.043); g.add(knuck);
     this.fingers = [];
     const L = [[0.027, 0.019, 0.016], [0.03, 0.021, 0.017], [0.028, 0.02, 0.016], [0.022, 0.016, 0.014]]; // index..pinky

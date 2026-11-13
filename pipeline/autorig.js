@@ -49,7 +49,7 @@ function fitJoints(P, H) {
   for (let j = Math.round(0.15 * H / c); j < Math.round(0.65 * H / c); j++) { const r = runs(j).filter(([a, b]) => Math.abs(xOf(a)) < 0.3 * H || Math.abs(xOf(b)) < 0.3 * H); if (r.some(([a, b]) => a < ic - 1 && b > ic + 1)) { mergeJ = j; break; } }
   const merge = mergeJ * c; info.legMerge = +(merge / H).toFixed(3);
   const hipY = Math.min(0.57 * H, Math.max(0.52 * H, merge + 0.06 * H));
-  const legRun = (side, y) => { const j = Math.round(y / c); const r = runs(j).filter(([a, b]) => side > 0 ? xOf(a) > -0.01 * H && xOf(a) < 0.2 * H : xOf(b) < 0.01 * H && xOf(b) > -0.2 * H); if (!r.length) return null; const [a, b] = side > 0 ? r[0] : r[r.length - 1]; return { x: (xOf(a) + xOf(b)) / 2, z: zAt(j, a, b), w: (b - a + 1) * c }; };
+  const legRun = (side, y) => { const j = Math.round(y / c); const r = runs(j).map(([a, b]) => a < ic && b > ic ? (side > 0 ? [ic, b] : [a, ic]) : [a, b]).filter(([a, b]) => side > 0 ? xOf(a) > -0.01 * H && xOf(a) < 0.2 * H : xOf(b) < 0.01 * H && xOf(b) > -0.2 * H); if (!r.length) return null; const [a, b] = side > 0 ? r[0] : r[r.length - 1]; return { x: (xOf(a) + xOf(b)) / 2, z: zAt(j, a, b), w: (b - a + 1) * c }; };
   for (const [side, S] of [[1, 'Left'], [-1, 'Right']]) {
     const kneeY = 0.28 * H, ankY = 0.05 * H;
     const k = legRun(side, kneeY), a = legRun(side, ankY + 0.015 * H), t = legRun(side, merge - 0.03 * H) || k;
@@ -80,8 +80,11 @@ function fitJoints(P, H) {
       line.push(new THREE.Vector3((xOf(o[0]) + xOf(o[1])) / 2, j * c, zAt(j, o[0], o[1])));
       chestHalf = Math.abs(xOf(tEdge));
     }
-    info[S + 'Armpit'] = armpitY && +(armpitY / H).toFixed(3); info[S + 'Chest'] = +(chestHalf / H).toFixed(3);
-    const use = line.filter(p => side * p.x < side * tip.x - 0.13 * H);
+    // T-pose (arms level with the shoulders): the row scan finds no hanging arm, so fit the line to every vertex outside the chest
+    const tposed = line.length < 8 || Math.abs(tip.y - 0.8 * H) < 0.08 * H && Math.abs(tip.x) > 0.4 * H;
+    if (tposed) { const r = runs(Math.round(0.62 * H / c)).find(([a, b]) => a <= ic && b >= ic); if (r) chestHalf = Math.abs(xOf(side > 0 ? r[1] : r[0])); }
+    info[S + 'Armpit'] = armpitY && +(armpitY / H).toFixed(3); info[S + 'Chest'] = +(chestHalf / H).toFixed(3); info[S + 'TPose'] = tposed;
+    const use = tposed ? arm.filter(p => side * p.x > chestHalf * 1.15 && p.y > 0.55 * H && side * p.x < side * tip.x - 0.12 * H && p.distanceTo(tip) > 0.12 * H) : line.filter(p => side * p.x < side * tip.x - 0.13 * H);
     const { c: lc, d } = pcaLine(use.length > 4 ? use : line);
     if (side * d.x < 0) d.negate();
     const at = x => lc.clone().addScaledVector(d, (x - lc.x) / d.x);
