@@ -19,7 +19,7 @@ POSE = ('full body game character, front view, standing straight in an A-pose wi
 
 def client(space):
     print(f'connecting to {space}', flush=True)
-    return Client(space, hf_token=TOKEN) if TOKEN else Client(space)
+    return Client(space, token=TOKEN) if TOKEN else Client(space)
 
 
 def path_of(r):
