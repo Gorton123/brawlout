@@ -6,7 +6,8 @@
 // Steps per character (files live in characters/<id>/):
 //   1 fetch   download source.raw / source.rigged URLs from roster.json  -> raw.glb / rigged.glb
 //   2 orient  turn raw.glb to face +Z, strip any rig                   -> front.glb + <id>_mixamo.zip (+ preview_front.png)
-//   3 (you)   upload <id>_mixamo.zip to mixamo.com, download "FBX Binary, With Skin, T-pose", commit it as mixamo.fbx
+//   3 autorig free built-in rigger: fits the Mixamo skeleton + skin weights to front.glb -> game.glb
+//   3b (optional, better) upload <id>_mixamo.zip to mixamo.com, download "FBX Binary, With Skin, T-pose", commit it as mixamo.fbx
 //   4 ingest  mixamo.fbx -> game.glb (Mixamo skeleton, shared animation clips)
 //   5 check   rig sanity checks + preview_idle.png / preview_punch.png
 //   6 install copy game.glb to assets/<slot>.glb when status is "approved" (or --force)
@@ -31,7 +32,8 @@ function nextStep(c) {
   const id = c.id;
   if (!has(id, 'raw.glb') && c.source?.raw) return 'fetch';
   if (has(id, 'raw.glb') && !has(id, 'front.glb')) return 'orient';
-  if (!has(id, 'mixamo.fbx')) return 'mixamo (manual: upload ' + id + '_mixamo.zip to mixamo.com, commit FBX as characters/' + id + '/mixamo.fbx)';
+  if (!has(id, 'mixamo.fbx') && (!has(id, 'game.glb') || newer(id, 'front.glb', 'game.glb'))) return 'autorig';
+  if (!has(id, 'mixamo.fbx') && c.status === 'approved') return 'done (auto-rigged; optional upgrade: commit a Mixamo FBX as characters/' + id + '/mixamo.fbx)';
   if (newer(id, 'mixamo.fbx', 'game.glb')) return 'ingest';
   if (c.status !== 'approved') return 'review previews, then set "status": "approved" in roster.json';
   return 'done';
@@ -81,6 +83,11 @@ async function orientStep(c) {
   await call('preview', b64(P(c.id, 'front.glb')), null, null, 0); await shot(P(c.id, 'preview_front.png'));
   log(`  mixamo zip ready: characters/${c.id}/${c.id}_mixamo.zip`);
 }
+async function autorigStep(c) {
+  const r = await call('autorig', b64(P(c.id, 'front.glb')), b64(path.join(ROOT, 'assets', 'quick.glb')), { tex: c.texture || 1024 });
+  fs.writeFileSync(P(c.id, 'game.glb'), Buffer.from(r.b64, 'base64'));
+  log(`  autorig: game.glb ${(r.size / 1e6).toFixed(2)} MB  legs merge ${r.info.legMerge}, armpits ${r.info.LeftArmpit}/${r.info.RightArmpit}`);
+}
 async function ingestStep(c) {
   const r = await call('ingestFBX', b64(P(c.id, 'mixamo.fbx')), { tex: c.texture || 1024 });
   fs.writeFileSync(P(c.id, 'game.glb'), Buffer.from(r.b64, 'base64'));
@@ -120,6 +127,7 @@ try {
       log(c.id); fs.mkdirSync(P(c.id, ''), { recursive: true });
       if (nextStep(c) === 'fetch') await fetchStep(c);
       if (nextStep(c) === 'orient' || (force && has(c.id, 'raw.glb'))) await orientStep(c);
+      if (nextStep(c) === 'autorig' || (force && has(c.id, 'front.glb') && !has(c.id, 'mixamo.fbx'))) await autorigStep(c);
       if (nextStep(c) === 'ingest' || (force && has(c.id, 'mixamo.fbx'))) await ingestStep(c);
       await checkStep(c);
       installStep(c);

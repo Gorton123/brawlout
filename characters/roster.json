@@ -1,11 +1,11 @@
 {
-  "notes": "One entry per character. slot = which game asset it replaces (hero, brawler, quick, big, grunt, gladiator). status: needs-rig -> review -> approved. Only approved characters are installed into the game.",
+  "notes": "One entry per character. slot = which game asset it replaces (hero, brawler, quick, big, grunt, gladiator). status: review -> approved. Rig: built-in autorig by default; a committed mixamo.fbx overrides it. Only approved characters are installed.",
   "characters": [
     {
       "id": "hero",
       "name": "Hero (player)",
       "slot": "hero",
-      "status": "needs-rig",
+      "status": "approved",
       "concept": "https://d8j0ntlcm91z4.cloudfront.net/user_31Xtid4xciseq6HaOQywNLJpJL9/hf_20261110_193154_5c5198d9-31e1-4dc7-9ed8-fdb700a987d9.png",
       "source": {
         "raw": "https://d8j0ntlcm91z4.cloudfront.net/user_31Xtid4xciseq6HaOQywNLJpJL9/hf_20261110_203628_0668789f-82b3-41aa-9be5-62a0bcedd208.glb"
@@ -16,7 +16,7 @@
       "id": "brawler",
       "name": "Brawler (main enemy)",
       "slot": "brawler",
-      "status": "needs-rig",
+      "status": "approved",
       "concept": "https://d8j0ntlcm91z4.cloudfront.net/user_31Xtid4xciseq6HaOQywNLJpJL9/hf_20261110_193154_c34cb076-c4a1-4b3c-9c34-224bdd7166d2.png",
       "source": {
         "raw": "https://d8j0ntlcm91z4.cloudfront.net/user_31Xtid4xciseq6HaOQywNLJpJL9/hf_20261110_203630_703fa7b7-0089-4ed5-8821-c1177b535c93.glb"
@@ -27,7 +27,7 @@
       "id": "gladiator",
       "name": "Gladiator (Rome enemy)",
       "slot": "gladiator",
-      "status": "needs-rig",
+      "status": "review",
       "concept": "https://d8j0ntlcm91z4.cloudfront.net/user_31Xtid4xciseq6HaOQywNLJpJL9/hf_20261110_193153_c71f33bc-44ba-4788-8a5e-4f803aa35c18.png",
       "source": {
         "raw": "https://d8j0ntlcm91z4.cloudfront.net/user_31Xtid4xciseq6HaOQywNLJpJL9/hf_20261110_203632_72c5beba-fcb1-4ef5-a123-dbc3e4b37024.glb"
