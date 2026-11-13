@@ -27,12 +27,33 @@ jobs:
         with:
           python-version: '3.11'
       - run: pip install gradio_client pillow
-      - name: Run
+      - name: Probe
+        if: github.event.inputs.mode == 'probe'
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: python tests/ai/probe.py
+      - name: UniRig
+        if: github.event.inputs.mode == 'unirig' || github.event.inputs.mode == 'all'
+        continue-on-error: true
+        timeout-minutes: 120
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: python tests/ai/run.py unirig
+      - name: Save UniRig outputs
+        if: always()
+        run: |
+          git config user.name "brawlout-bot"; git config user.email "actions@users.noreply.github.com"
+          git add tests/ai/out characters/lion characters/roster.json 2>/dev/null || true
+          if git diff --cached --quiet; then echo nothing; else git commit -m "ai-tests: unirig outputs [skip ci]" && git pull --rebase && git push; fi
+      - name: MoMask (old gradio client - the Space runs Gradio 3)
+        if: github.event.inputs.mode == 'momask' || github.event.inputs.mode == 'all'
+        continue-on-error: true
+        timeout-minutes: 120
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          mode="${{ github.event.inputs.mode }}"
-          if [ "$mode" = probe ]; then python tests/ai/probe.py; else python tests/ai/run.py "$mode"; fi
+          python -m venv /tmp/old && /tmp/old/bin/pip install -q "gradio_client==0.8.1" pillow
+          /tmp/old/bin/python tests/ai/run.py momask
       - name: Commit outputs
         if: always()
         run: |

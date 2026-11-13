@@ -168,6 +168,19 @@ window.autorig = async (meshB64, refB64, opts = {}) => {
   for (const p of P) p.y -= box.min.y;
   const sample = P.filter((_, i) => i % 2 === 0);
   const { J, info, torsoW } = fitJoints(sample, H);
+  // UniRig mode: snap the main joints onto UniRig's predicted joints (same limb, nearest within reach)
+  let uniJ = null, uniMap = null;
+  if (opts.uni) {
+    uniJ = opts.uni.joints.map(a => V(a[0], a[1] - box.min.y, a[2]));
+    info.snapped = [];
+    for (const k of Object.keys(J)) {
+      if (/Tip$|Hand(Thumb|Index|Middle|Ring|Pinky)|HeadTop/.test(k)) continue;
+      const side = /^Left/.test(k) ? 1 : /^Right/.test(k) ? -1 : 0;
+      let best = -1, bd = (/Shoulder|Spine|Neck|Hips/.test(k) ? 0.06 : 0.08) * H;
+      uniJ.forEach((q, i) => { if (side && Math.sign(q.x) !== side && Math.abs(q.x) > 0.01 * H) return; if (!side && Math.abs(q.x) > 0.05 * H) return; const d = q.distanceTo(J[k]); if (d < bd) { bd = d; best = i; } });
+      if (best >= 0) { J[k] = uniJ[best].clone(); info.snapped.push(k); }
+    }
+  }
 
   // reference skeleton (Mixamo naming, shared clip conventions)
   const rs = SkeletonUtils.clone(ref.scene); rs.updateMatrixWorld(true);
@@ -271,11 +284,25 @@ window.autorig = async (meshB64, refB64, opts = {}) => {
       let ws2 = ws;
       // head + jaw move as one: blend Neck -> Head by height so the face never shears
       if ((best.n === 'Neck' || best.n === 'Head' || (p.y > J.Neck.y && /^Spine|Shoulder/.test(best.n))) && Math.abs(p.x) < 0.12 * H) { const g = J.Head.y - J.Neck.y, t = Math.max(0, Math.min(1, (p.y - (J.Neck.y + 0.15 * g)) / (0.45 * g))); const hw = t * t * (3 - 2 * t); ws.length = 0; ws.push(['Head', hw + 1e-6], ['Neck', 1 - hw + 1e-6]); }
+      if (opts.uni && !isFinger(best.n)) {
+        // UniRig weights carried over onto the Mixamo bones (fingers keep the geometric weights)
+        if (!uniMap) uniMap = opts.uni.joints.map((_, u) => {
+          const kids = opts.uni.parent.map((pp, c) => pp === u ? c : -1).filter(c => c >= 0);
+          const tail = kids.length ? kids.reduce((acc, c) => acc.add(uniJ[c]), V()).divideScalar(kids.length) : uniJ[u].clone().add(V(0, 0.02 * H, 0));
+          const mid = uniJ[u].clone().lerp(tail, 0.5);
+          let bn = 'Hips', bd2 = 1e9;
+          for (const sg of seg) { if (isFinger(sg.n)) continue; if (/^Left/.test(sg.n) && mid.x < -0.01 * H) continue; if (/^Right/.test(sg.n) && mid.x > 0.01 * H) continue; const dd = segDist(mid, sg.a, sg.b).d / sg.r; if (dd < bd2) { bd2 = dd; bn = sg.n; } }
+          return bn;
+        });
+        const acc = {}; for (const [u, w] of opts.uni.weights[offset + i]) { const n = uniMap[u]; acc[n] = (acc[n] || 0) + w; }
+        const top = Object.entries(acc).sort((a, b) => b[1] - a[1]).slice(0, 4);
+        if (top.length) { ws.length = 0; ws.push(...top); }
+      }
       const tot = ws.reduce((a, w) => a + w[1], 0);
       ws.forEach(([n, w], k) => { SI[i * 4 + k] = bi.get(n); SW[i * 4 + k] = w / tot; });
     }
     offset += N;
-    smoothWeights(m.geometry, SI, SW, bones.length, opts.smooth ?? 4);
+    smoothWeights(m.geometry, SI, SW, bones.length, opts.uni ? 0 : (opts.smooth ?? 4));
     out.push({ m, SI, SW });
   }
   const dom = {}; for (const { SI, SW } of out) for (let i = 0; i < SW.length / 4; i++) { const n = strip(bones[SI[i * 4]].name); dom[n] = (dom[n] || 0) + 1; }

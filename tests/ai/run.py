@@ -22,7 +22,16 @@ def save_t(k, v):
 
 def client(sp):
     print(f'connecting to {sp}', flush=True)
-    return Client(sp, token=TOKEN) if TOKEN else Client(sp)
+    import inspect
+    kw = 'token' if 'token' in inspect.signature(Client.__init__).parameters else 'hf_token'
+    return Client(sp, **({kw: TOKEN} if TOKEN else {}))
+
+def timed(fn, timeout):
+    # gradio calls can hang in a queue forever: give each one a hard limit
+    import concurrent.futures as cf
+    ex = cf.ThreadPoolExecutor(1); fut = ex.submit(fn)
+    try: return fut.result(timeout=timeout)
+    finally: ex.shutdown(wait=False, cancel_futures=True)
 
 def path_of(r):
     if isinstance(r, str) and os.path.exists(r): return r
@@ -46,7 +55,7 @@ def make_lion():
     gen3d.POSE = 'full body side view, standing on all four legs, plain white background, even studio lighting, highly detailed fur, 3D render, '
     t = time.time()
     try:
-        gen3d.one('lion', 'a powerful adult male African lion with a thick dark mane, muscular, realistic, Roman arena beast')
+        timed(lambda: gen3d.one('lion', 'a powerful adult male African lion with a thick dark mane, muscular, realistic, Roman arena beast'), 1200)
         save_t('lion_generate_s', round(time.time() - t)); return True
     except BaseException as e:
         print('lion generation failed:', e); save_t('lion_generate_s', f'failed: {e}'); return False
@@ -58,7 +67,7 @@ def rig_one(cid, src):
                      ('faisal786U/unirig-api', lambda c: c.predict(handle_file(src), api_name='/rig_model'))]:
         t = time.time()
         try:
-            r = call(client(sp)); p = path_of(r)
+            r = timed(lambda: call(client(sp)), 900); p = path_of(r)
             print(f'  {cid} via {sp}: {str(r)[:200]}', flush=True)
             if p:
                 shutil.copy(p, out); save_t(f'unirig_{cid}_s', round(time.time() - t)); save_t(f'unirig_{cid}_space', sp); return
@@ -100,7 +109,7 @@ def momask():
         if os.path.exists(out): continue
         t = time.time()
         try:
-            html = c.predict(text, '0', 'IK', fn_index=3)
+            html = timed(lambda: c.predict(text, '0', 'IK', fn_index=3), 600)
             links = re.findall(r'(?:href|src)=["\']([^"\']+\.bvh)', str(html)) or re.findall(r'(/file=[^"\'\s>]+\.bvh)', str(html))
             print(f'  {key}: {len(str(html))} chars html, bvh links {links[:2]}', flush=True)
             if not links:
@@ -118,6 +127,6 @@ def momask():
 if __name__ == '__main__':
     mode = sys.argv[1] if len(sys.argv) > 1 else 'all'
     t0 = time.time()
-    if mode in ('momask', 'all'): momask()
     if mode in ('unirig', 'all'): unirig()
+    if mode in ('momask', 'all'): momask()
     save_t(f'total_{mode}_s', round(time.time() - t0))

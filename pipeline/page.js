@@ -5,7 +5,8 @@ import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
 import { mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import '../tools/retarget.js';
-import './autorig.js'; // retarget, staticRotated, toOBJ, renderClip, clipsOnly
+import './autorig.js';
+import './aitest.js'; // retarget, staticRotated, toOBJ, renderClip, clipsOnly
 
 const b64ToBuf = s => { const bin = atob(s); const u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return u.buffer; };
 const bufToB64 = buf => { const b = new Uint8Array(buf); let s = ''; for (let i = 0; i < b.length; i += 0x8000) s += String.fromCharCode.apply(null, b.subarray(i, i + 0x8000)); return btoa(s); };
