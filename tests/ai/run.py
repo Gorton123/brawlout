@@ -9,7 +9,11 @@
 Outputs go to tests/ai/out/ with timings.json; stage 2 (pipeline/ai_tests.mjs) maps, renders and scores them.
 """
 import json, os, re, shutil, sys, time, traceback, urllib.request
-from gradio_client import Client, handle_file
+from gradio_client import Client
+try:
+    from gradio_client import handle_file
+except ImportError:  # old client (for Gradio 3 Spaces)
+    handle_file = lambda p: p
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 OUT = os.path.join(ROOT, 'tests', 'ai', 'out'); os.makedirs(OUT, exist_ok=True)
