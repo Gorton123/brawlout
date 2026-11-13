@@ -103,7 +103,11 @@ function fitJoints(P, H) {
     J[S + 'Arm'] = sh; J[S + 'ForeArm'] = el; J[S + 'Hand'] = w2; J[S + 'HandTip'] = tip2.clone();
     J[S + 'Shoulder'] = new THREE.Vector3(side * Math.abs(sh.x) * 0.34, J.Spine2.y + (J.Neck.y - J.Spine2.y) * 0.8, J.Spine2.z);
   }
-  return { J, info, hipY };
+  // torso half-width per row (centre run), used to keep belly/side vertices off the arm bones
+  const torsoHalf = new Float32Array(NY);
+  for (let j = 0; j < NY; j++) { const r = runs(j).find(([a, b]) => a <= ic && b >= ic); if (r) torsoHalf[j] = Math.max(Math.abs(xOf(r[0])), Math.abs(xOf(r[1]))) - c * 0.5; }
+  const torsoW = y => torsoHalf[Math.max(0, Math.min(NY - 1, Math.round(y / c)))];
+  return { J, info, hipY, torsoW };
 }
 
 const MAIN_CHILD = { Hips: 'Spine', Spine: 'Spine1', Spine1: 'Spine2', Spine2: 'Neck', Neck: 'Head', Head: 'HeadTop',
@@ -163,7 +167,7 @@ window.autorig = async (meshB64, refB64, opts = {}) => {
   const box = new THREE.Box3().setFromPoints(P), H = box.max.y - box.min.y;
   for (const p of P) p.y -= box.min.y;
   const sample = P.filter((_, i) => i % 2 === 0);
-  const { J, info } = fitJoints(sample, H);
+  const { J, info, torsoW } = fitJoints(sample, H);
 
   // reference skeleton (Mixamo naming, shared clip conventions)
   const rs = SkeletonUtils.clone(ref.scene); rs.updateMatrixWorld(true);
@@ -258,6 +262,7 @@ window.autorig = async (meshB64, refB64, opts = {}) => {
         if (/(UpLeg|Leg|Foot|Toe)/.test(sg.n) && p.y > J.Hips.y + 0.02 * H) continue;
         if (isFinger(sg.n) && p.distanceTo(J[sg.n.startsWith('Left') ? 'LeftHand' : 'RightHand']) > 0.16 * H) continue;
         if (/(Arm|Hand)$/.test(sg.n) && Math.abs(p.x) < 0.8 * Math.abs(J.LeftArm.x)) continue;
+        { const ap = (info[(p.x > 0 ? 'Left' : 'Right') + 'Armpit'] || 0.65) * H; if (/(Arm|Hand)$/.test(sg.n) && !isFinger(sg.n) && p.y < ap - 0.01 * H && Math.abs(p.x) < torsoW(p.y)) continue; }
         const d = segDist(p, sg.a, sg.b).d / sg.r; if (d < bd) { bd = d; best = sg; }
       }
       const gp = best.parent && segOf[best.parent] ? segOf[best.parent].parent : null;
