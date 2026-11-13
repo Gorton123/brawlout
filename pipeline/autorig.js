@@ -81,7 +81,7 @@ function fitJoints(P, H) {
       chestHalf = Math.abs(xOf(tEdge));
     }
     // T-pose (arms level with the shoulders): the row scan finds no hanging arm, so fit the line to every vertex outside the chest
-    const tposed = line.length < 8 || Math.abs(tip.y - 0.8 * H) < 0.08 * H && Math.abs(tip.x) > 0.4 * H;
+    const tposed = (line.length < 8 && tip.y > 0.66 * H) || (Math.abs(tip.y - 0.8 * H) < 0.08 * H && Math.abs(tip.x) > 0.4 * H);
     if (tposed) { const xs = P.filter(p => p.y > 0.6 * H && p.y < 0.64 * H && Math.abs(p.x) < 0.3 * H).map(p => Math.abs(p.x)).sort((a, b) => a - b); if (xs.length) chestHalf = xs[Math.floor(xs.length * 0.97)]; }
     info[S + 'Armpit'] = armpitY && +(armpitY / H).toFixed(3); info[S + 'Chest'] = +(chestHalf / H).toFixed(3); info[S + 'TPose'] = tposed;
     const use = tposed ? arm.filter(p => side * p.x > chestHalf * 1.15 && p.y > 0.55 * H && side * p.x < side * tip.x - 0.12 * H && p.distanceTo(tip) > 0.12 * H) : line.filter(p => side * p.x < side * tip.x - 0.13 * H);
@@ -94,7 +94,7 @@ function fitJoints(P, H) {
     sh.z = J.Spine2.z;
     // fingertip = the vertex furthest along the arm direction, close to the arm line
     let tipBest = null, tb = -1e9;
-    for (const p of arm) { if (side * p.x < chestHalf) continue; const rel = p.clone().sub(lc), t = rel.dot(d); const off = rel.addScaledVector(d, -t).length(); if (off < 0.09 * H && t > tb) { tb = t; tipBest = p; } }
+    for (const p of arm) { if (side * p.x < chestHalf) continue; const rel = p.clone().sub(lc), t = rel.dot(d); const ov = rel.addScaledVector(d, -t), off = ov.length(); if (side * ov.x < -0.03 * H) continue; /* inward of the arm line = the thigh */ if (off < 0.09 * H && t > tb) { tb = t; tipBest = p; } }
     const tip2 = tipBest || tip;
     const tipOnLine = lc.clone().addScaledVector(d, tb);
     const wrist = tipOnLine.clone().addScaledVector(d, -0.105 * H);
@@ -189,7 +189,9 @@ window.autorig = async (meshB64, refB64, opts = {}) => {
     const tH = JW[S + 'Hand'], tTip = JW[S + 'HandTip'], tDir = tTip.clone().sub(tH).normalize();
     // fingers from the geometry: slice the hand along its axis and split the finger zone into four bands
     const wr = J[S + 'Hand'], tp = J[S + 'HandTip'], ax = tp.clone().sub(wr), Lh = ax.length(); ax.normalize();
-    const hv = P.filter(p => { const t = p.clone().sub(wr).dot(ax); return t > -0.02 * H && t < Lh * 1.05 && p.distanceTo(wr) < Lh * 1.3 && Math.sign(p.x) === (S === 'Left' ? 1 : -1); });
+    const sd = S === 'Left' ? 1 : -1, fa = J[S + 'Hand'].clone().sub(J[S + 'ForeArm']).normalize();
+    const hv = P.filter(p => { const r = p.clone().sub(wr), t = r.dot(ax); if (!(t > -0.02 * H && t < Lh * 1.05 && p.distanceTo(wr) < Lh * 1.3 && Math.sign(p.x) === sd)) return false;
+      const ov = r.clone().addScaledVector(fa, -r.dot(fa)); return sd * ov.x > -0.045 * H; /* not the thigh next to a hanging hand */ });
     // width direction = biggest spread across the axis; thumb sits on the forward (+z) side
     const perp = hv.map(p => { const r = p.clone().sub(wr); return r.addScaledVector(ax, -r.dot(ax)); });
     const { d: wd0 } = pcaLine(perp.map(v => v.clone()).concat([V(0, 0, 0)]));

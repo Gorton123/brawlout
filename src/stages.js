@@ -1,5 +1,6 @@
 // Extra arenas: Rome (Colosseum), Moon (lunar base), Street (London at night)
 import * as THREE from 'three';
+import { makeCar, makeShop, ledLamp, busShelter, trafficLight, puddle } from './street.js';
 import * as CANNON from 'cannon-es';
 import { G } from './groups.js';
 import { mk, rng, tex, speckle } from './textures.js';
@@ -425,7 +426,8 @@ export function buildMoon(game) {
   // meteor warning ring pool
   game.meteors = []; game.meteorT = 4;
   const props = [];
-  for (const [x, z] of [[-1.5, 2.5], [2.5, 1.5], [-5.5, -1.5]]) props.push(new Prop(game, 'rock', x, 0.3, z));
+  for (const [x, z] of [[-1.5, 2.5], [-5.5, -1.5]]) props.push(new Prop(game, 'rock', x, 0.3, z));
+  props.push(new Prop(game, 'wrench', 2.5, 0.3, 1.5)); props.push(new Prop(game, 'pipe', -3, 0.3, 4)); props.push(new Prop(game, 'wrench', 5, 0.3, -3));
   const spawns = [new THREE.Vector3(domeX + 2.6, 0, domeZ + 2.6), new THREE.Vector3(R - 1.2, 0, 0), new THREE.Vector3(-R + 1.2, 0, 1), new THREE.Vector3(0, 0, R - 1.2), new THREE.Vector3(1.5, 0, -R + 1.5)];
   return { colliders: K.colliders, props, spawns };
 }
@@ -454,15 +456,15 @@ export function buildStreet(game) {
   let si = 0;
   for (const s of [-1, 1]) for (let i = 0; i < 4; i++) {
     const [n, col, glow] = shops[si++];
-    const x = -15 + i * 10;
-    const st = shopTex(n, col, glow); const f = mesh(new THREE.PlaneGeometry(10, 15), new THREE.MeshStandardMaterial({ map: st, roughness: 0.85, emissive: 0x3a3a3a, emissiveMap: st }), x, 7.5, s * 6.7, false, true);
-    f.rotation.y = s > 0 ? Math.PI : 0;
-    // glowing window strip
-    const wg = mesh(new THREE.PlaneGeometry(6.6, 3.2), new THREE.MeshBasicMaterial({ color: new THREE.Color(glow).multiplyScalar(0.6), transparent: true, opacity: 0.22, blending: THREE.AdditiveBlending, depthWrite: false }), x - 1.3, 1.85, s * 6.66, false, false);
-    wg.rotation.y = f.rotation.y;
-    // awning
-    const aw = mesh(new THREE.BoxGeometry(9.5, 0.08, 1.1), new THREE.MeshStandardMaterial({ color: new THREE.Color(col).multiplyScalar(0.8), roughness: 0.7 }), x, 3.9, s * 6.15, true, false); aw.rotation.x = s * 0.25;
+    const b = makeShop(n, col, glow, { seed: si * 7 + (s > 0 ? 3 : 0), width: 9.8 });
+    b.position.set(-15 + i * 10, 0.14, s * 6.7); b.rotation.y = s > 0 ? Math.PI : 0; scene.add(b);
+    b.traverse(o => { if (o.isMesh) { o.receiveShadow = true; } });
   }
+  // the far ends of the street: more buildings so it doesn't stop dead
+  for (const [x, z, ry] of [[-21, 6.7, Math.PI], [-21, -6.7, 0], [21, 6.7, Math.PI], [21, -6.7, 0]]) { const b = makeShop(['CAFE', 'BARBER', 'PHONES', 'PIZZA'][Math.abs(x + z * 3) % 4 | 0], '#202a3a', '#ffd27a', { seed: x * 3 + z, width: 9.8 }); b.position.set(x, 0.14, z); b.rotation.y = ry; scene.add(b); }
+  busShelter(scene, 6.5, -5.4, 0, 'BRAWL OUT');
+  for (const [x, z, ry] of [[-6.5, -3.9, 0], [-6.5, 3.9, Math.PI]]) trafficLight(scene, x, z, ry);
+  for (const [x, z, sc] of [[-3, 1.2, 1.4], [6, -1.8, 1.1], [10.5, 0.6, 0.9], [-10, -1, 1.2]]) puddle(scene, x, z, sc);
   staticBox(20, 4, 0.4, 0, 4, 7.0, false); staticBox(20, 4, 0.4, 0, 4, -7.0, false);
   staticBox(0.4, 4, 7, X + 0.6, 4, 0, false); staticBox(0.4, 4, 7, -X - 0.6, 4, 0, false);
   // end of street: a red bus and police tape barrier
@@ -480,29 +482,18 @@ export function buildStreet(game) {
   const carCols = [0x1a1a1e, 0xd8d8dc, 0x2a4a8a, 0x7a1010];
   const cars = [[-8.5, -2.4, 0], [4.5, -2.4, 0], [-1.5, 2.4, Math.PI], [9.5, 2.4, Math.PI]];
   game.carLights = [];
+  const styles = ['saloon', 'hatch', 'suv', 'saloon'];
   cars.forEach(([x, z, ry], i) => {
-    const c = new THREE.Group(); c.position.set(x, 0, z); c.rotation.y = ry; scene.add(c);
-    const body = new THREE.MeshPhysicalMaterial({ color: carCols[i], roughness: 0.25, metalness: 0.6, clearcoat: 1, clearcoatRoughness: 0.1 });
-    mesh(new THREE.BoxGeometry(4.0, 0.6, 1.8), body, 0, 0.62, 0, true, true, c);
-    mesh(new THREE.BoxGeometry(2.1, 0.55, 1.62), glassDark, -0.2, 1.2, 0, true, false, c);
-    mesh(new THREE.BoxGeometry(2.12, 0.08, 1.64), body, -0.2, 1.5, 0, true, false, c);
-    for (const wx of [-1.3, 1.3]) for (const wz of [-0.85, 0.85]) { const w = mesh(new THREE.CylinderGeometry(0.33, 0.33, 0.24, 16), new THREE.MeshStandardMaterial({ color: 0x0c0c0c, roughness: 0.8 }), wx, 0.33, wz, true, false, c); w.rotation.x = Math.PI / 2; }
-    for (const lz of [-0.6, 0.6]) {
-      mesh(new THREE.BoxGeometry(0.04, 0.12, 0.3), new THREE.MeshBasicMaterial({ color: new THREE.Color(3, 3, 2.6) }), 2.01, 0.7, lz, false, false, c);
-      mesh(new THREE.BoxGeometry(0.04, 0.12, 0.3), new THREE.MeshBasicMaterial({ color: new THREE.Color(2.5, 0.1, 0.1) }), -2.01, 0.7, lz, false, false, c);
-    }
+    const c = makeCar(carCols[i], styles[i]); c.position.set(x, 0, z); c.rotation.y = ry; scene.add(c);
+    c.traverse(o => { if (o.isMesh) o.castShadow = true; });
     staticBox(2.0, 0.75, 0.9, x, 0.75, z, true, ry);
     game.surfaces.push({ name: 'CAR BONNET', minX: x - 1.8, maxX: x + 1.8, minZ: z - 0.8, maxZ: z + 0.8, y: 1.0, car: c });
   });
   // street lamps (sodium) + a red phone box + bins + bollards
   const pole = new THREE.MeshStandardMaterial({ color: 0x1e2224, metalness: 0.7, roughness: 0.4 });
   game.lampLights = [];
-  for (const [x, z] of [[-10, -4.0], [0, -4.0], [10, -4.0], [-5, 4.0], [5, 4.0]]) {
-    mesh(new THREE.CylinderGeometry(0.07, 0.1, 5.2, 8), pole, x, 2.6, z);
-    const arm = mesh(new THREE.BoxGeometry(0.08, 0.08, 1.0), pole, x, 5.15, z + (z < 0 ? 0.5 : -0.5), false, false);
-    mesh(new THREE.BoxGeometry(0.4, 0.12, 0.25), new THREE.MeshBasicMaterial({ color: new THREE.Color(4, 2.4, 0.8) }), x, 5.05, z + (z < 0 ? 0.95 : -0.95), false, false);
-  }
-  for (const [x, z] of [[-10, -3.0], [10, -3.0], [-5, 3.0], [5, 3.0]]) { const L = new THREE.PointLight(0xffa64d, 11, 11, 1.7); L.position.set(x, 4.8, z); scene.add(L); game.lampLights.push(L); }
+  for (const [x, z] of [[-10, -4.0], [0, -4.0], [10, -4.0], [-5, 4.0], [5, 4.0]]) ledLamp(scene, x, z, z < 0 ? 1 : -1);
+  for (const [x, z] of [[-10, -3.0], [10, -3.0], [-5, 3.0], [5, 3.0]]) { const L = new THREE.PointLight(0xdfe8ff, 10, 12, 1.7); L.position.set(x, 5.6, z); scene.add(L); game.lampLights.push(L); }
   const kiosk = new THREE.Group(); kiosk.position.set(-12.2, 0.14, -5.6); scene.add(kiosk);
   mesh(new THREE.BoxGeometry(0.95, 2.5, 0.95), red, 0, 1.25, 0, true, true, kiosk);
   mesh(new THREE.BoxGeometry(0.8, 1.7, 0.96), new THREE.MeshBasicMaterial({ color: new THREE.Color(1.2, 1.1, 0.8) }), 0, 1.3, 0, false, false, kiosk);
@@ -531,6 +522,7 @@ export function buildStreet(game) {
   const props = [];
   for (const [x, z] of [[-6, 0.8], [2, -1.2], [7, 1.0], [-2, 4.7], [-9.5, 4.6]]) props.push(new Prop(game, 'cash', x, 0.25, z));
   for (const [x, z] of [[1.5, 4.8], [-7, -4.8]]) props.push(new Prop(game, 'bottle', x, 0.3, z, Math.floor(Math.random() * 4)));
+  props.push(new Prop(game, 'bat', -4, 0.3, -3.8)); props.push(new Prop(game, 'crowbar', 4.5, 0.3, 3.9)); props.push(new Prop(game, 'bat', 9, 0.3, -2));
   const spawns = [new THREE.Vector3(-X + 0.8, 0, -1.5), new THREE.Vector3(-X + 0.8, 0, 1.5), new THREE.Vector3(X - 0.8, 0, -1.2), new THREE.Vector3(X - 0.8, 0, 1.5), new THREE.Vector3(0, 0, 4.8)];
   return { colliders: K.colliders, props, spawns };
 }

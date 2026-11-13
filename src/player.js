@@ -40,9 +40,10 @@ class Arm {
   get busy() { return this.state !== 'idle'; }
   // five-finger hand: wrapped palm + knuckles, three-segment fingers, thumb. Curls with this.curl.
   buildHand(skin) {
-    const side = this.side, g = this.group, wrap = this.wrapMat;
+    const side = this.side, wrap = this.wrapMat;
+    const g = this.handG = new THREE.Group(); this.group.add(g);
     const cap = (r, len, mat) => { const m = new THREE.Mesh(new THREE.CapsuleGeometry(r, len, 4, 10), mat); m.rotation.x = Math.PI / 2; m.position.z = -len / 2; return m; };
-    const palm = new THREE.Mesh(new RoundedBoxGeometry(0.084, 0.036, 0.088, 4, 0.016), wrap); palm.position.z = -0.004; g.add(palm);
+    const palm = new THREE.Mesh(new RoundedBoxGeometry(0.084, 0.04, 0.088, 5, 0.019), wrap); palm.position.z = -0.004; g.add(palm);
     const knuck = new THREE.Mesh(new RoundedBoxGeometry(0.088, 0.03, 0.026, 2, 0.011), wrap); knuck.position.set(0, 0.004, -0.043); g.add(knuck);
     this.fingers = [];
     const L = [[0.027, 0.019, 0.016], [0.03, 0.021, 0.017], [0.028, 0.02, 0.016], [0.022, 0.016, 0.014]]; // index..pinky
@@ -63,6 +64,7 @@ class Arm {
     this.modelArms = true;
     for (const m of [this.upper, this.fore, this.cuff]) m.visible = false;
     this.glove = null;
+    this.handG.scale.setScalar(1.2); this.handG.position.z = -0.01; // match the model's forearm thickness
   }
   setVisible(v) {
     if (this.modelArms) { this.group.visible = v; if (this.player.fp) this.player.fp.show(v); return; }
@@ -119,6 +121,10 @@ export const WEXEC = {
   stool: { head: SM('STOOL SMASH', 'gone'), body: SM('STOOL SMASH', 'gone') },
   cash: { head: SM('MONEY SHOT', 'gone'), body: SM('MONEY SHOT', 'gone') },
   rock: { head: SM('MOON ROCK', 'gone'), body: SM('MOON ROCK', 'gone') },
+  bat: { head: SM('HOME RUN', null), body: SM('BAT TO THE RIBS', null) },
+  crowbar: { head: SM('CROWBARRED', null), body: { name: 'PRISED OPEN', kind: 'stab', dur: 0.75 } },
+  wrench: { head: SM('SPANNERED', null), body: SM('TIGHTENED UP', null) },
+  pipe: { head: SM('PIPE DOWN', null), body: SM('PIPE DOWN', null) },
 };
 export function wexecSpec(type, zone) { const X = WEXEC[type]; return X ? (zone === 'head' ? X.head : X.body) : null; }
 const TWO_HANDED = new Set(['cue', 'stool', 'halfcue', 'spear']);
