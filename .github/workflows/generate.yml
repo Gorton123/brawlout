@@ -1,0 +1,50 @@
+name: Generate character (free)
+
+# Concept image (FLUX.1-schnell) -> 3D model (TRELLIS) -> auto-rig -> game.glb, all on free tools.
+# Run it from the Actions tab: "Generate character (free)" -> Run workflow.
+on:
+  workflow_dispatch:
+    inputs:
+      id:
+        description: 'Character id (e.g. topboy)'
+        required: true
+      description:
+        description: 'What the character looks like'
+        required: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: characters
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install gradio_client pillow
+      - name: Concept + 3D model
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: python pipeline/gen3d.py "${{ github.event.inputs.id }}" "${{ github.event.inputs.description }}"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Orient + auto-rig + previews
+        run: node pipeline/cbuild.mjs build "${{ github.event.inputs.id }}"
+      - name: Commit outputs
+        if: always()
+        run: |
+          git config user.name "brawlout-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add characters assets
+          if git diff --cached --quiet; then echo "nothing new"; else git commit -m "characters: generated ${{ github.event.inputs.id }} [skip ci]" && git pull --rebase && git push; fi
