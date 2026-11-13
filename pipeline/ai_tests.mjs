@@ -16,7 +16,7 @@ const page = await browser.newPage({ viewport: { width: 1760, height: 420 } });
 page.on('pageerror', e => console.log('[page error]', e.message));
 await page.goto('file://' + path.join(ROOT, 'pipeline/.page.html'));
 const call = (fn, ...a) => page.evaluate(([fn, a]) => window[fn](...a), [fn, a]);
-const ref = b64(path.join(ROOT, 'assets/quick.glb')), lib = b64(path.join(ROOT, 'assets/clips.glb'));
+const ref = b64(path.join(ROOT, 'pipeline/ref_mixamo.glb')), lib = b64(path.join(ROOT, 'assets/clips.glb'));
 const results = fs.existsSync(path.join(OUT, 'results.json')) ? JSON.parse(fs.readFileSync(path.join(OUT, 'results.json'))) : { unirig: {}, momask: {} };
 const save = () => fs.writeFileSync(path.join(OUT, 'results.json'), JSON.stringify(results, null, 1));
 const only = process.argv.slice(2);

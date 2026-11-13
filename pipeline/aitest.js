@@ -85,17 +85,21 @@ function skinnedTris(sm) {
 function scoreMesh(sm, rest, posed) {
   const idx = sm.geometry.index ? sm.geometry.index.array : null, T = idx ? idx.length : sm.geometry.attributes.position.count;
   const si = sm.geometry.attributes.skinIndex, sw = sm.geometry.attributes.skinWeight, bones = sm.skeleton.bones;
-  const dom = i => { let bk = 0, bw = -1; for (let k = 0; k < 4; k++) { const w = sw.getComponent(i, k); if (w > bw) { bw = w; bk = si.getComponent(i, k); } } return REGION(strip(bones[bk].name)); };
+  // rigid rotation of every bone (bind -> posed): a triangle counts as "wrapped" only if it ends up facing away from
+  // where its own bone's rotation would put it (so a turned hand isn't counted as a flip)
+  sm.skeleton.update();
+  const rot = bones.map((b, j) => new THREE.Matrix3().setFromMatrix4(new THREE.Matrix4().multiplyMatrices(b.matrixWorld, sm.skeleton.boneInverses[j])));
+  const domB = i => { let bk = 0, bw = -1; for (let k = 0; k < 4; k++) { const w = sw.getComponent(i, k); if (w > bw) { bw = w; bk = si.getComponent(i, k); } } return bk; };
   const R = {}; for (const r of [...REGIONS, 'torso']) R[r] = { st: [], flips: 0, tris: 0 };
   const a = V(), b = V(), c = V(), a2 = V(), b2 = V(), c2 = V(), n1 = V(), n2 = V();
   const g = (arr, i, o) => o.set(arr[i * 3], arr[i * 3 + 1], arr[i * 3 + 2]);
   for (let t = 0; t < T; t += 3) {
     const i0 = idx ? idx[t] : t, i1 = idx ? idx[t + 1] : t + 1, i2 = idx ? idx[t + 2] : t + 2;
     g(rest, i0, a); g(rest, i1, b); g(rest, i2, c); g(posed, i0, a2); g(posed, i1, b2); g(posed, i2, c2);
-    const r = R[dom(i0)]; r.tris++;
+    const bj = domB(i0), r = R[REGION(strip(bones[bj].name))]; r.tris++;
     for (const [p, q, p2, q2] of [[a, b, a2, b2], [b, c, b2, c2], [c, a, c2, a2]]) { const l0 = p.distanceTo(q); if (l0 > 1e-6) r.st.push(Math.abs(p2.distanceTo(q2) / l0 - 1)); }
     n1.subVectors(b, a).cross(V().subVectors(c, a)); n2.subVectors(b2, a2).cross(V().subVectors(c2, a2));
-    if (n1.lengthSq() > 1e-14 && n1.dot(n2) < -0.2 * n1.length() * n2.length()) r.flips++;
+    if (n1.lengthSq() > 1e-14 && n2.lengthSq() > 1e-14) { n1.applyMatrix3(rot[bj]); if (n1.dot(n2) < -0.2 * n1.length() * n2.length()) r.flips++; }
   }
   const out = {};
   for (const [k, r] of Object.entries(R)) { if (!r.tris) continue; r.st.sort((x, y) => x - y); out[k] = { stretch95: +(r.st[Math.floor(r.st.length * 0.95)] || 0).toFixed(3), flipPct: +(100 * r.flips / r.tris).toFixed(2), tris: r.tris }; }

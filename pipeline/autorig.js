@@ -283,7 +283,7 @@ window.autorig = async (meshB64, refB64, opts = {}) => {
       const ws = cand.map(n => { const sg = segOf[n]; const d = segDist(p, sg.a, sg.b).d / sg.r; return [n, 1 / Math.pow(d + 0.25, 6)]; }).sort((a, b) => b[1] - a[1]).slice(0, 4);
       let ws2 = ws;
       // head + jaw move as one: blend Neck -> Head by height so the face never shears
-      if ((best.n === 'Neck' || best.n === 'Head' || (p.y > J.Neck.y && /^Spine|Shoulder/.test(best.n))) && Math.abs(p.x) < 0.12 * H) { const g = J.Head.y - J.Neck.y, t = Math.max(0, Math.min(1, (p.y - (J.Neck.y + 0.15 * g)) / (0.45 * g))); const hw = t * t * (3 - 2 * t); ws.length = 0; ws.push(['Head', hw + 1e-6], ['Neck', 1 - hw + 1e-6]); }
+      if ((best.n === 'Neck' || best.n === 'Head' || (p.y > J.Neck.y && /^Spine|Shoulder/.test(best.n))) && Math.abs(p.x) < 0.12 * H) { const g = J.Head.y - J.Neck.y, t = Math.max(0, Math.min(1, (p.y - J.Neck.y) / Math.max(0.01 * H, 0.6 * g))); /* blend only across the neck; the whole head and jaw follow Head */ const hw = t * t * (3 - 2 * t); ws.length = 0; ws.push(['Head', hw + 1e-6], ['Neck', 1 - hw + 1e-6]); }
       if (opts.uni && !isFinger(best.n)) {
         // UniRig weights carried over onto the Mixamo bones (fingers keep the geometric weights)
         if (!uniMap) uniMap = opts.uni.joints.map((_, u) => {

@@ -84,7 +84,7 @@ async function orientStep(c) {
   log(`  mixamo zip ready: characters/${c.id}/${c.id}_mixamo.zip`);
 }
 async function autorigStep(c) {
-  const r = await call('autorig', b64(P(c.id, 'front.glb')), b64(path.join(ROOT, 'assets', 'quick.glb')), { tex: c.texture || 1024, ntex: c.normalTexture || 512 });
+  const r = await call('autorig', b64(P(c.id, 'front.glb')), b64(path.join(ROOT, 'pipeline', 'ref_mixamo.glb')), { tex: c.texture || 1024, ntex: c.normalTexture || 512 });
   fs.writeFileSync(P(c.id, 'game.glb'), Buffer.from(r.b64, 'base64'));
   log(`  autorig: game.glb ${(r.size / 1e6).toFixed(2)} MB  legs merge ${r.info.legMerge}, armpits ${r.info.LeftArmpit}/${r.info.RightArmpit}`);
 }
