@@ -119,10 +119,15 @@ def momask():
             if not links:
                 open(os.path.join(OUT, 'momask', f'{key}.html'), 'w').write(str(html)); raise RuntimeError('no bvh link in result')
             url = links[0]
-            if url.startswith('/'): url = c.src.rstrip('/') + url
-            elif not url.startswith('http'): url = c.src.rstrip('/') + '/file=' + url
-            req = urllib.request.Request(url, headers={'Authorization': f'Bearer {TOKEN}'} if TOKEN else {})
-            open(out, 'wb').write(urllib.request.urlopen(req, timeout=120).read())
+            cands = [url] if url.startswith('http') else [c.src.rstrip('/') + '/' + url.lstrip('/'), c.src.rstrip('/') + '/file=' + url.split('file/', 1)[-1], c.src.rstrip('/') + '/file=' + url]
+            data = None
+            for u in cands:
+                try:
+                    req = urllib.request.Request(u, headers={'Authorization': f'Bearer {TOKEN}'} if TOKEN else {})
+                    data = urllib.request.urlopen(req, timeout=120).read(); print('   got', u, len(data)); break
+                except Exception as e2: print('   ', u, e2)
+            if not data or b'HIERARCHY' not in data[:200]: raise RuntimeError('could not download bvh')
+            open(out, 'wb').write(data)
             save_t(f'momask_{key}_s', round(time.time() - t))
         except Exception as e:
             print(f'  {key} failed: {str(e)[:300]}', flush=True); traceback.print_exc(limit=1)
