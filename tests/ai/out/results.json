@@ -1,0 +1,3389 @@
+{
+ "unirig": {
+  "brawler": {
+   "id": "brawler",
+   "info": {
+    "bones": 52,
+    "skinned": 1,
+    "verts": 17378,
+    "box": [
+     [
+      -0.323,
+      0,
+      -0.108
+     ],
+     [
+      0.323,
+      1,
+      0.108
+     ]
+    ],
+    "list": [
+     {
+      "n": "bone_0",
+      "p": null,
+      "xyz": [
+       0.002,
+       0.584,
+       -0.006
+      ]
+     },
+     {
+      "n": "bone_1",
+      "p": "bone_0",
+      "xyz": [
+       0.002,
+       0.635,
+       -0.014
+      ]
+     },
+     {
+      "n": "bone_2",
+      "p": "bone_1",
+      "xyz": [
+       0.002,
+       0.697,
+       -0.021
+      ]
+     },
+     {
+      "n": "bone_3",
+      "p": "bone_2",
+      "xyz": [
+       0.002,
+       0.768,
+       -0.029
+      ]
+     },
+     {
+      "n": "bone_4",
+      "p": "bone_3",
+      "xyz": [
+       0.002,
+       0.846,
+       -0.037
+      ]
+     },
+     {
+      "n": "bone_5",
+      "p": "bone_4",
+      "xyz": [
+       0.002,
+       0.885,
+       -0.018
+      ]
+     },
+     {
+      "n": "bone_6",
+      "p": "bone_3",
+      "xyz": [
+       0.041,
+       0.826,
+       -0.037
+      ]
+     },
+     {
+      "n": "bone_7",
+      "p": "bone_6",
+      "xyz": [
+       0.123,
+       0.787,
+       -0.037
+      ]
+     },
+     {
+      "n": "bone_8",
+      "p": "bone_7",
+      "xyz": [
+       0.193,
+       0.689,
+       -0.037
+      ]
+     },
+     {
+      "n": "bone_9",
+      "p": "bone_8",
+      "xyz": [
+       0.264,
+       0.596,
+       -0.006
+      ]
+     },
+     {
+      "n": "bone_10",
+      "p": "bone_9",
+      "xyz": [
+       0.268,
+       0.564,
+       0.014
+      ]
+     },
+     {
+      "n": "bone_11",
+      "p": "bone_10",
+      "xyz": [
+       0.268,
+       0.545,
+       0.033
+      ]
+     },
+     {
+      "n": "bone_12",
+      "p": "bone_11",
+      "xyz": [
+       0.26,
+       0.521,
+       0.045
+      ]
+     },
+     {
+      "n": "bone_13",
+      "p": "bone_9",
+      "xyz": [
+       0.303,
+       0.521,
+       0.033
+      ]
+     },
+     {
+      "n": "bone_14",
+      "p": "bone_13",
+      "xyz": [
+       0.311,
+       0.502,
+       0.037
+      ]
+     },
+     {
+      "n": "bone_15",
+      "p": "bone_14",
+      "xyz": [
+       0.314,
+       0.486,
+       0.041
+      ]
+     },
+     {
+      "n": "bone_16",
+      "p": "bone_9",
+      "xyz": [
+       0.307,
+       0.518,
+       0.014
+      ]
+     },
+     {
+      "n": "bone_17",
+      "p": "bone_16",
+      "xyz": [
+       0.314,
+       0.498,
+       0.018
+      ]
+     },
+     {
+      "n": "bone_18",
+      "p": "bone_17",
+      "xyz": [
+       0.318,
+       0.479,
+       0.021
+      ]
+     },
+     {
+      "n": "bone_19",
+      "p": "bone_9",
+      "xyz": [
+       0.307,
+       0.51,
+       0.002
+      ]
+     },
+     {
+      "n": "bone_20",
+      "p": "bone_19",
+      "xyz": [
+       0.311,
+       0.494,
+       -0.002
+      ]
+     },
+     {
+      "n": "bone_21",
+      "p": "bone_20",
+      "xyz": [
+       0.311,
+       0.479,
+       -0.002
+      ]
+     },
+     {
+      "n": "bone_22",
+      "p": "bone_9",
+      "xyz": [
+       0.299,
+       0.518,
+       -0.018
+      ]
+     },
+     {
+      "n": "bone_23",
+      "p": "bone_22",
+      "xyz": [
+       0.299,
+       0.502,
+       -0.021
+      ]
+     },
+     {
+      "n": "bone_24",
+      "p": "bone_23",
+      "xyz": [
+       0.299,
+       0.49,
+       -0.021
+      ]
+     },
+     {
+      "n": "bone_25",
+      "p": "bone_3",
+      "xyz": [
+       -0.037,
+       0.826,
+       -0.037
+      ]
+     },
+     {
+      "n": "bone_26",
+      "p": "bone_25",
+      "xyz": [
+       -0.119,
+       0.787,
+       -0.037
+      ]
+     },
+     {
+      "n": "bone_27",
+      "p": "bone_26",
+      "xyz": [
+       -0.189,
+       0.689,
+       -0.037
+      ]
+     },
+     {
+      "n": "bone_28",
+      "p": "bone_27",
+      "xyz": [
+       -0.26,
+       0.596,
+       -0.006
+      ]
+     },
+     {
+      "n": "bone_29",
+      "p": "bone_28",
+      "xyz": [
+       -0.264,
+       0.564,
+       0.014
+      ]
+     },
+     {
+      "n": "bone_30",
+      "p": "bone_29",
+      "xyz": [
+       -0.264,
+       0.545,
+       0.033
+      ]
+     },
+     {
+      "n": "bone_31",
+      "p": "bone_30",
+      "xyz": [
+       -0.256,
+       0.521,
+       0.045
+      ]
+     },
+     {
+      "n": "bone_32",
+      "p": "bone_28",
+      "xyz": [
+       -0.299,
+       0.521,
+       0.033
+      ]
+     },
+     {
+      "n": "bone_33",
+      "p": "bone_32",
+      "xyz": [
+       -0.307,
+       0.502,
+       0.037
+      ]
+     },
+     {
+      "n": "bone_34",
+      "p": "bone_33",
+      "xyz": [
+       -0.311,
+       0.486,
+       0.041
+      ]
+     },
+     {
+      "n": "bone_35",
+      "p": "bone_28",
+      "xyz": [
+       -0.303,
+       0.518,
+       0.014
+      ]
+     },
+     {
+      "n": "bone_36",
+      "p": "bone_35",
+      "xyz": [
+       -0.311,
+       0.498,
+       0.018
+      ]
+     },
+     {
+      "n": "bone_37",
+      "p": "bone_36",
+      "xyz": [
+       -0.314,
+       0.479,
+       0.021
+      ]
+     },
+     {
+      "n": "bone_38",
+      "p": "bone_28",
+      "xyz": [
+       -0.303,
+       0.518,
+       0.002
+      ]
+     },
+     {
+      "n": "bone_39",
+      "p": "bone_38",
+      "xyz": [
+       -0.307,
+       0.498,
+       -0.002
+      ]
+     },
+     {
+      "n": "bone_40",
+      "p": "bone_39",
+      "xyz": [
+       -0.307,
+       0.479,
+       -0.002
+      ]
+     },
+     {
+      "n": "bone_41",
+      "p": "bone_28",
+      "xyz": [
+       -0.295,
+       0.518,
+       -0.018
+      ]
+     },
+     {
+      "n": "bone_42",
+      "p": "bone_41",
+      "xyz": [
+       -0.295,
+       0.502,
+       -0.021
+      ]
+     },
+     {
+      "n": "bone_43",
+      "p": "bone_42",
+      "xyz": [
+       -0.295,
+       0.49,
+       -0.021
+      ]
+     },
+     {
+      "n": "bone_44",
+      "p": "bone_0",
+      "xyz": [
+       0.061,
+       0.553,
+       -0.002
+      ]
+     },
+     {
+      "n": "bone_45",
+      "p": "bone_44",
+      "xyz": [
+       0.1,
+       0.311,
+       -0.01
+      ]
+     },
+     {
+      "n": "bone_46",
+      "p": "bone_45",
+      "xyz": [
+       0.131,
+       0.068,
+       -0.037
+      ]
+     },
+     {
+      "n": "bone_47",
+      "p": "bone_46",
+      "xyz": [
+       0.146,
+       0.01,
+       0.049
+      ]
+     },
+     {
+      "n": "bone_48",
+      "p": "bone_0",
+      "xyz": [
+       -0.057,
+       0.553,
+       0.002
+      ]
+     },
+     {
+      "n": "bone_49",
+      "p": "bone_48",
+      "xyz": [
+       -0.096,
+       0.311,
+       -0.01
+      ]
+     },
+     {
+      "n": "bone_50",
+      "p": "bone_49",
+      "xyz": [
+       -0.127,
+       0.068,
+       -0.033
+      ]
+     },
+     {
+      "n": "bone_51",
+      "p": "bone_50",
+      "xyz": [
+       -0.143,
+       0.01,
+       0.049
+      ]
+     }
+    ]
+   },
+   "mapping": {
+    "snapped": [
+     "LeftUpLeg",
+     "LeftLeg",
+     "LeftFoot",
+     "LeftToeBase",
+     "RightUpLeg",
+     "RightLeg",
+     "RightFoot",
+     "RightToeBase",
+     "Spine",
+     "Spine1",
+     "Spine2",
+     "Neck",
+     "Head",
+     "LeftArm",
+     "LeftForeArm",
+     "LeftHand",
+     "LeftShoulder",
+     "RightArm",
+     "RightForeArm",
+     "RightHand",
+     "RightShoulder"
+    ],
+    "ms": 4035
+   },
+   "unirig": [
+    {
+     "name": "idle",
+     "knees": {
+      "stretch95": 0.143,
+      "flipPct": 0.36,
+      "tris": 9942
+     },
+     "elbows": {
+      "stretch95": 0.493,
+      "flipPct": 1.67,
+      "tris": 1860
+     },
+     "shoulders": {
+      "stretch95": 0.561,
+      "flipPct": 3.97,
+      "tris": 3980
+     },
+     "hips": {
+      "stretch95": 0.452,
+      "flipPct": 0.96,
+      "tris": 4895
+     },
+     "fingers": {
+      "stretch95": 0.409,
+      "flipPct": 1.52,
+      "tris": 1183
+     },
+     "face": {
+      "stretch95": 0.448,
+      "flipPct": 0.97,
+      "tris": 2571
+     },
+     "torso": {
+      "stretch95": 0.415,
+      "flipPct": 1.63,
+      "tris": 5527
+     }
+    },
+    {
+     "name": "jab",
+     "knees": {
+      "stretch95": 0.2,
+      "flipPct": 0.85,
+      "tris": 9942
+     },
+     "elbows": {
+      "stretch95": 0.492,
+      "flipPct": 1.51,
+      "tris": 1860
+     },
+     "shoulders": {
+      "stretch95": 0.662,
+      "flipPct": 4.37,
+      "tris": 3980
+     },
+     "hips": {
+      "stretch95": 0.797,
+      "flipPct": 3.49,
+      "tris": 4895
+     },
+     "fingers": {
+      "stretch95": 0.252,
+      "flipPct": 0.76,
+      "tris": 1183
+     },
+     "face": {
+      "stretch95": 0.346,
+      "flipPct": 0.27,
+      "tris": 2571
+     },
+     "torso": {
+      "stretch95": 0.734,
+      "flipPct": 5.45,
+      "tris": 5527
+     }
+    },
+    {
+     "name": "hook",
+     "knees": {
+      "stretch95": 0.198,
+      "flipPct": 0.58,
+      "tris": 9942
+     },
+     "elbows": {
+      "stretch95": 0.54,
+      "flipPct": 2.42,
+      "tris": 1860
+     },
+     "shoulders": {
+      "stretch95": 0.569,
+      "flipPct": 3.84,
+      "tris": 3980
+     },
+     "hips": {
+      "stretch95": 0.673,
+      "flipPct": 3.06,
+      "tris": 4895
+     },
+     "fingers": {
+      "stretch95": 0.563,
+      "flipPct": 1.69,
+      "tris": 1183
+     },
+     "face": {
+      "stretch95": 0.533,
+      "flipPct": 1.98,
+      "tris": 2571
+     },
+     "torso": {
+      "stretch95": 0.623,
+      "flipPct": 4.02,
+      "tris": 5527
+     }
+    },
+    {
+     "name": "uppercut",
+     "knees": {
+      "stretch95": 0.143,
+      "flipPct": 0.36,
+      "tris": 9942
+     },
+     "elbows": {
+      "stretch95": 0.443,
+      "flipPct": 1.61,
+      "tris": 1860
+     },
+     "shoulders": {
+      "stretch95": 0.67,
+      "flipPct": 5.08,
+      "tris": 3980
+     },
+     "hips": {
+      "stretch95": 0.452,
+      "flipPct": 0.96,
+      "tris": 4895
+     },
+     "fingers": {
+      "stretch95": 0.409,
+      "flipPct": 1.52,
+      "tris": 1183
+     },
+     "face": {
+      "stretch95": 0.448,
+      "flipPct": 0.97,
+      "tris": 2571
+     },
+     "torso": {
+      "stretch95": 0.52,
+      "flipPct": 1.54,
+      "tris": 5527
+     }
+    },
+    {
+     "name": "hit",
+     "knees": {
+      "stretch95": 0.175,
+      "flipPct": 0.31,
+      "tris": 9942
+     },
+     "elbows": {
+      "stretch95": 0.238,
+      "flipPct": 0.81,
+      "tris": 1860
+     },
+     "shoulders": {
+      "stretch95": 0.484,
+      "flipPct": 2.44,
+      "tris": 3980
+     },
+     "hips": {
+      "stretch95": 0.715,
+      "flipPct": 1.94,
+      "tris": 4895
+     },
+     "fingers": {
+      "stretch95": 1.328,
+      "flipPct": 1.18,
+      "tris": 1183
+     },
+     "face": {
+      "stretch95": 0.804,
+      "flipPct": 1.28,
+      "tris": 2571
+     },
+     "torso": {
+      "stretch95": 0.668,
+      "flipPct": 3.26,
+      "tris": 5527
+     }
+    },
+    {
+     "name": "knockdown",
+     "knees": {
+      "stretch95": 0.227,
+      "flipPct": 0.37,
+      "tris": 9942
+     },
+     "elbows": {
+      "stretch95": 0.211,
+      "flipPct": 0.97,
+      "tris": 1860
+     },
+     "shoulders": {
+      "stretch95": 0.509,
+      "flipPct": 3.27,
+      "tris": 3980
+     },
+     "hips": {
+      "stretch95": 0.307,
+      "flipPct": 0.67,
+      "tris": 4895
+     },
+     "fingers": {
+      "stretch95": 0.77,
+      "flipPct": 1.61,
+      "tris": 1183
+     },
+     "face": {
+      "stretch95": 0.431,
+      "flipPct": 1.24,
+      "tris": 2571
+     },
+     "torso": {
+      "stretch95": 0.397,
+      "flipPct": 1.01,
+      "tris": 5527
+     }
+    },
+    {
+     "name": "lifted",
+     "knees": {
+      "stretch95": 0.169,
+      "flipPct": 0.5,
+      "tris": 9942
+     },
+     "elbows": {
+      "stretch95": 0.166,
+      "flipPct": 0.59,
+      "tris": 1860
+     },
+     "shoulders": {
+      "stretch95": 1.01,
+      "flipPct": 6.83,
+      "tris": 3980
+     },
+     "hips": {
+      "stretch95": 0.616,
+      "flipPct": 3.02,
+      "tris": 4895
+     },
+     "fingers": {
+      "stretch95": 0.409,
+      "flipPct": 1.52,
+      "tris": 1183
+     },
+     "face": {
+      "stretch95": 0.448,
+      "flipPct": 0.97,
+      "tris": 2571
+     },
+     "torso": {
+      "stretch95": 0.958,
+      "flipPct": 2.44,
+      "tris": 5527
+     }
+    },
+    {
+     "name": "grabbed",
+     "knees": {
+      "stretch95": 0.124,
+      "flipPct": 0.34,
+      "tris": 9942
+     },
+     "elbows": {
+      "stretch95": 0.312,
+      "flipPct": 1.51,
+      "tris": 1860
+     },
+     "shoulders": {
+      "stretch95": 0.692,
+      "flipPct": 4.95,
+      "tris": 3980
+     },
+     "hips": {
+      "stretch95": 0.507,
+      "flipPct": 1.94,
+      "tris": 4895
+     },
+     "fingers": {
+      "stretch95": 1.38,
+      "flipPct": 1.61,
+      "tris": 1183
+     },
+     "face": {
+      "stretch95": 0.654,
+      "flipPct": 1.01,
+      "tris": 2571
+     },
+     "torso": {
+      "stretch95": 0.81,
+      "flipPct": 3.76,
+      "tris": 5527
+     }
+    }
+   ],
+   "autorig": [
+    {
+     "name": "idle",
+     "knees": {
+      "stretch95": 0.2,
+      "flipPct": 0.05,
+      "tris": 7759
+     },
+     "elbows": {
+      "stretch95": 0.737,
+      "flipPct": 0.41,
+      "tris": 1446
+     },
+     "shoulders": {
+      "stretch95": 0.87,
+      "flipPct": 0.6,
+      "tris": 2685
+     },
+     "hips": {
+      "stretch95": 0.201,
+      "flipPct": 0.08,
+      "tris": 7477
+     },
+     "fingers": {
+      "stretch95": 0.256,
+      "flipPct": 0.19,
+      "tris": 1056
+     },
+     "face": {
+      "stretch95": 0.786,
+      "flipPct": 2.4,
+      "tris": 3254
+     },
+     "torso": {
+      "stretch95": 0.314,
+      "flipPct": 0.57,
+      "tris": 6281
+     }
+    },
+    {
+     "name": "jab",
+     "knees": {
+      "stretch95": 0.228,
+      "flipPct": 0.22,
+      "tris": 7759
+     },
+     "elbows": {
+      "stretch95": 0.798,
+      "flipPct": 0.14,
+      "tris": 1446
+     },
+     "shoulders": {
+      "stretch95": 1.172,
+      "flipPct": 0.63,
+      "tris": 2685
+     },
+     "hips": {
+      "stretch95": 0.461,
+      "flipPct": 1.73,
+      "tris": 7477
+     },
+     "fingers": {
+      "stretch95": 0.177,
+      "flipPct": 0.09,
+      "tris": 1056
+     },
+     "face": {
+      "stretch95": 0.691,
+      "flipPct": 2.3,
+      "tris": 3254
+     },
+     "torso": {
+      "stretch95": 0.413,
+      "flipPct": 0.84,
+      "tris": 6281
+     }
+    },
+    {
+     "name": "hook",
+     "knees": {
+      "stretch95": 0.225,
+      "flipPct": 0.15,
+      "tris": 7759
+     },
+     "elbows": {
+      "stretch95": 0.749,
+      "flipPct": 0.21,
+      "tris": 1446
+     },
+     "shoulders": {
+      "stretch95": 0.934,
+      "flipPct": 0.19,
+      "tris": 2685
+     },
+     "hips": {
+      "stretch95": 0.366,
+      "flipPct": 0.52,
+      "tris": 7477
+     },
+     "fingers": {
+      "stretch95": 0.141,
+      "flipPct": 0,
+      "tris": 1056
+     },
+     "face": {
+      "stretch95": 0.941,
+      "flipPct": 2.49,
+      "tris": 3254
+     },
+     "torso": {
+      "stretch95": 0.251,
+      "flipPct": 0.21,
+      "tris": 6281
+     }
+    },
+    {
+     "name": "uppercut",
+     "knees": {
+      "stretch95": 0.2,
+      "flipPct": 0.05,
+      "tris": 7759
+     },
+     "elbows": {
+      "stretch95": 0.733,
+      "flipPct": 0.35,
+      "tris": 1446
+     },
+     "shoulders": {
+      "stretch95": 0.973,
+      "flipPct": 1.27,
+      "tris": 2685
+     },
+     "hips": {
+      "stretch95": 0.203,
+      "flipPct": 0.12,
+      "tris": 7477
+     },
+     "fingers": {
+      "stretch95": 0.256,
+      "flipPct": 0.19,
+      "tris": 1056
+     },
+     "face": {
+      "stretch95": 0.786,
+      "flipPct": 2.4,
+      "tris": 3254
+     },
+     "torso": {
+      "stretch95": 0.338,
+      "flipPct": 0.8,
+      "tris": 6281
+     }
+    },
+    {
+     "name": "hit",
+     "knees": {
+      "stretch95": 0.173,
+      "flipPct": 0.03,
+      "tris": 7759
+     },
+     "elbows": {
+      "stretch95": 0.515,
+      "flipPct": 0.48,
+      "tris": 1446
+     },
+     "shoulders": {
+      "stretch95": 0.88,
+      "flipPct": 1.79,
+      "tris": 2685
+     },
+     "hips": {
+      "stretch95": 0.342,
+      "flipPct": 0.88,
+      "tris": 7477
+     },
+     "fingers": {
+      "stretch95": 0.394,
+      "flipPct": 0.38,
+      "tris": 1056
+     },
+     "face": {
+      "stretch95": 1.232,
+      "flipPct": 4.7,
+      "tris": 3254
+     },
+     "torso": {
+      "stretch95": 0.302,
+      "flipPct": 0.51,
+      "tris": 6281
+     }
+    },
+    {
+     "name": "knockdown",
+     "knees": {
+      "stretch95": 0.287,
+      "flipPct": 0.31,
+      "tris": 7759
+     },
+     "elbows": {
+      "stretch95": 0.43,
+      "flipPct": 0.35,
+      "tris": 1446
+     },
+     "shoulders": {
+      "stretch95": 0.801,
+      "flipPct": 1.15,
+      "tris": 2685
+     },
+     "hips": {
+      "stretch95": 0.14,
+      "flipPct": 0.09,
+      "tris": 7477
+     },
+     "fingers": {
+      "stretch95": 0.325,
+      "flipPct": 0.47,
+      "tris": 1056
+     },
+     "face": {
+      "stretch95": 0.743,
+      "flipPct": 2.24,
+      "tris": 3254
+     },
+     "torso": {
+      "stretch95": 0.262,
+      "flipPct": 0.37,
+      "tris": 6281
+     }
+    },
+    {
+     "name": "lifted",
+     "knees": {
+      "stretch95": 0.228,
+      "flipPct": 0.1,
+      "tris": 7759
+     },
+     "elbows": {
+      "stretch95": 0.525,
+      "flipPct": 0.35,
+      "tris": 1446
+     },
+     "shoulders": {
+      "stretch95": 1.404,
+      "flipPct": 3.39,
+      "tris": 2685
+     },
+     "hips": {
+      "stretch95": 0.32,
+      "flipPct": 0.58,
+      "tris": 7477
+     },
+     "fingers": {
+      "stretch95": 0.256,
+      "flipPct": 0.19,
+      "tris": 1056
+     },
+     "face": {
+      "stretch95": 0.786,
+      "flipPct": 2.4,
+      "tris": 3254
+     },
+     "torso": {
+      "stretch95": 0.461,
+      "flipPct": 0.91,
+      "tris": 6281
+     }
+    },
+    {
+     "name": "grabbed",
+     "knees": {
+      "stretch95": 0.226,
+      "flipPct": 0.08,
+      "tris": 7759
+     },
+     "elbows": {
+      "stretch95": 0.59,
+      "flipPct": 0.41,
+      "tris": 1446
+     },
+     "shoulders": {
+      "stretch95": 1.23,
+      "flipPct": 0.71,
+      "tris": 2685
+     },
+     "hips": {
+      "stretch95": 0.355,
+      "flipPct": 0.76,
+      "tris": 7477
+     },
+     "fingers": {
+      "stretch95": 0.287,
+      "flipPct": 0.28,
+      "tris": 1056
+     },
+     "face": {
+      "stretch95": 1.039,
+      "flipPct": 3.96,
+      "tris": 3254
+     },
+     "torso": {
+      "stretch95": 0.344,
+      "flipPct": 0.37,
+      "tris": 6281
+     }
+    }
+   ]
+  },
+  "hero": {
+   "id": "hero",
+   "info": {
+    "bones": 52,
+    "skinned": 1,
+    "verts": 17054,
+    "box": [
+     [
+      -0.329,
+      0,
+      -0.106
+     ],
+     [
+      0.329,
+      1,
+      0.106
+     ]
+    ],
+    "list": [
+     {
+      "n": "bone_0",
+      "p": null,
+      "xyz": [
+       0.002,
+       0.584,
+       0.002
+      ]
+     },
+     {
+      "n": "bone_1",
+      "p": "bone_0",
+      "xyz": [
+       0.002,
+       0.635,
+       -0.006
+      ]
+     },
+     {
+      "n": "bone_2",
+      "p": "bone_1",
+      "xyz": [
+       0.002,
+       0.697,
+       -0.014
+      ]
+     },
+     {
+      "n": "bone_3",
+      "p": "bone_2",
+      "xyz": [
+       0.002,
+       0.768,
+       -0.018
+      ]
+     },
+     {
+      "n": "bone_4",
+      "p": "bone_3",
+      "xyz": [
+       0.002,
+       0.846,
+       -0.025
+      ]
+     },
+     {
+      "n": "bone_5",
+      "p": "bone_4",
+      "xyz": [
+       0.002,
+       0.885,
+       -0.018
+      ]
+     },
+     {
+      "n": "bone_6",
+      "p": "bone_3",
+      "xyz": [
+       0.037,
+       0.83,
+       -0.025
+      ]
+     },
+     {
+      "n": "bone_7",
+      "p": "bone_6",
+      "xyz": [
+       0.104,
+       0.795,
+       -0.025
+      ]
+     },
+     {
+      "n": "bone_8",
+      "p": "bone_7",
+      "xyz": [
+       0.189,
+       0.686,
+       -0.018
+      ]
+     },
+     {
+      "n": "bone_9",
+      "p": "bone_8",
+      "xyz": [
+       0.271,
+       0.58,
+       0.041
+      ]
+     },
+     {
+      "n": "bone_10",
+      "p": "bone_9",
+      "xyz": [
+       0.268,
+       0.561,
+       0.061
+      ]
+     },
+     {
+      "n": "bone_11",
+      "p": "bone_10",
+      "xyz": [
+       0.264,
+       0.545,
+       0.08
+      ]
+     },
+     {
+      "n": "bone_12",
+      "p": "bone_11",
+      "xyz": [
+       0.256,
+       0.529,
+       0.092
+      ]
+     },
+     {
+      "n": "bone_13",
+      "p": "bone_9",
+      "xyz": [
+       0.291,
+       0.525,
+       0.084
+      ]
+     },
+     {
+      "n": "bone_14",
+      "p": "bone_13",
+      "xyz": [
+       0.291,
+       0.51,
+       0.088
+      ]
+     },
+     {
+      "n": "bone_15",
+      "p": "bone_14",
+      "xyz": [
+       0.291,
+       0.494,
+       0.092
+      ]
+     },
+     {
+      "n": "bone_16",
+      "p": "bone_9",
+      "xyz": [
+       0.303,
+       0.525,
+       0.068
+      ]
+     },
+     {
+      "n": "bone_17",
+      "p": "bone_16",
+      "xyz": [
+       0.307,
+       0.506,
+       0.076
+      ]
+     },
+     {
+      "n": "bone_18",
+      "p": "bone_17",
+      "xyz": [
+       0.307,
+       0.486,
+       0.08
+      ]
+     },
+     {
+      "n": "bone_19",
+      "p": "bone_9",
+      "xyz": [
+       0.311,
+       0.521,
+       0.057
+      ]
+     },
+     {
+      "n": "bone_20",
+      "p": "bone_19",
+      "xyz": [
+       0.314,
+       0.506,
+       0.061
+      ]
+     },
+     {
+      "n": "bone_21",
+      "p": "bone_20",
+      "xyz": [
+       0.318,
+       0.49,
+       0.061
+      ]
+     },
+     {
+      "n": "bone_22",
+      "p": "bone_9",
+      "xyz": [
+       0.311,
+       0.525,
+       0.045
+      ]
+     },
+     {
+      "n": "bone_23",
+      "p": "bone_22",
+      "xyz": [
+       0.318,
+       0.514,
+       0.045
+      ]
+     },
+     {
+      "n": "bone_24",
+      "p": "bone_23",
+      "xyz": [
+       0.322,
+       0.502,
+       0.045
+      ]
+     },
+     {
+      "n": "bone_25",
+      "p": "bone_3",
+      "xyz": [
+       -0.033,
+       0.83,
+       -0.025
+      ]
+     },
+     {
+      "n": "bone_26",
+      "p": "bone_25",
+      "xyz": [
+       -0.1,
+       0.795,
+       -0.025
+      ]
+     },
+     {
+      "n": "bone_27",
+      "p": "bone_26",
+      "xyz": [
+       -0.186,
+       0.686,
+       -0.018
+      ]
+     },
+     {
+      "n": "bone_28",
+      "p": "bone_27",
+      "xyz": [
+       -0.268,
+       0.58,
+       0.041
+      ]
+     },
+     {
+      "n": "bone_29",
+      "p": "bone_28",
+      "xyz": [
+       -0.264,
+       0.561,
+       0.061
+      ]
+     },
+     {
+      "n": "bone_30",
+      "p": "bone_29",
+      "xyz": [
+       -0.26,
+       0.545,
+       0.08
+      ]
+     },
+     {
+      "n": "bone_31",
+      "p": "bone_30",
+      "xyz": [
+       -0.252,
+       0.529,
+       0.092
+      ]
+     },
+     {
+      "n": "bone_32",
+      "p": "bone_28",
+      "xyz": [
+       -0.287,
+       0.525,
+       0.084
+      ]
+     },
+     {
+      "n": "bone_33",
+      "p": "bone_32",
+      "xyz": [
+       -0.287,
+       0.51,
+       0.088
+      ]
+     },
+     {
+      "n": "bone_34",
+      "p": "bone_33",
+      "xyz": [
+       -0.283,
+       0.494,
+       0.092
+      ]
+     },
+     {
+      "n": "bone_35",
+      "p": "bone_28",
+      "xyz": [
+       -0.295,
+       0.525,
+       0.068
+      ]
+     },
+     {
+      "n": "bone_36",
+      "p": "bone_35",
+      "xyz": [
+       -0.303,
+       0.506,
+       0.076
+      ]
+     },
+     {
+      "n": "bone_37",
+      "p": "bone_36",
+      "xyz": [
+       -0.303,
+       0.486,
+       0.08
+      ]
+     },
+     {
+      "n": "bone_38",
+      "p": "bone_28",
+      "xyz": [
+       -0.303,
+       0.521,
+       0.057
+      ]
+     },
+     {
+      "n": "bone_39",
+      "p": "bone_38",
+      "xyz": [
+       -0.311,
+       0.506,
+       0.061
+      ]
+     },
+     {
+      "n": "bone_40",
+      "p": "bone_39",
+      "xyz": [
+       -0.314,
+       0.49,
+       0.061
+      ]
+     },
+     {
+      "n": "bone_41",
+      "p": "bone_28",
+      "xyz": [
+       -0.307,
+       0.525,
+       0.045
+      ]
+     },
+     {
+      "n": "bone_42",
+      "p": "bone_41",
+      "xyz": [
+       -0.314,
+       0.514,
+       0.045
+      ]
+     },
+     {
+      "n": "bone_43",
+      "p": "bone_42",
+      "xyz": [
+       -0.318,
+       0.502,
+       0.041
+      ]
+     },
+     {
+      "n": "bone_44",
+      "p": "bone_0",
+      "xyz": [
+       0.057,
+       0.553,
+       0.002
+      ]
+     },
+     {
+      "n": "bone_45",
+      "p": "bone_44",
+      "xyz": [
+       0.092,
+       0.311,
+       -0.01
+      ]
+     },
+     {
+      "n": "bone_46",
+      "p": "bone_45",
+      "xyz": [
+       0.131,
+       0.076,
+       -0.033
+      ]
+     },
+     {
+      "n": "bone_47",
+      "p": "bone_46",
+      "xyz": [
+       0.146,
+       0.01,
+       0.049
+      ]
+     },
+     {
+      "n": "bone_48",
+      "p": "bone_0",
+      "xyz": [
+       -0.053,
+       0.553,
+       0.002
+      ]
+     },
+     {
+      "n": "bone_49",
+      "p": "bone_48",
+      "xyz": [
+       -0.088,
+       0.311,
+       -0.01
+      ]
+     },
+     {
+      "n": "bone_50",
+      "p": "bone_49",
+      "xyz": [
+       -0.127,
+       0.076,
+       -0.033
+      ]
+     },
+     {
+      "n": "bone_51",
+      "p": "bone_50",
+      "xyz": [
+       -0.143,
+       0.01,
+       0.049
+      ]
+     }
+    ]
+   },
+   "mapping": {
+    "snapped": [
+     "LeftUpLeg",
+     "LeftLeg",
+     "LeftFoot",
+     "LeftToeBase",
+     "RightUpLeg",
+     "RightLeg",
+     "RightFoot",
+     "RightToeBase",
+     "Spine",
+     "Spine1",
+     "Spine2",
+     "Neck",
+     "Head",
+     "LeftArm",
+     "LeftForeArm",
+     "LeftHand",
+     "LeftShoulder",
+     "RightArm",
+     "RightForeArm",
+     "RightHand",
+     "RightShoulder"
+    ],
+    "ms": 2984
+   },
+   "unirig": [
+    {
+     "name": "idle",
+     "knees": {
+      "stretch95": 0.129,
+      "flipPct": 0.39,
+      "tris": 9635
+     },
+     "elbows": {
+      "stretch95": 0.4,
+      "flipPct": 0.86,
+      "tris": 2441
+     },
+     "shoulders": {
+      "stretch95": 0.484,
+      "flipPct": 1.39,
+      "tris": 3882
+     },
+     "hips": {
+      "stretch95": 0.513,
+      "flipPct": 0.57,
+      "tris": 3481
+     },
+     "fingers": {
+      "stretch95": 0,
+      "flipPct": 0.22,
+      "tris": 908
+     },
+     "face": {
+      "stretch95": 0.448,
+      "flipPct": 0.49,
+      "tris": 2051
+     },
+     "torso": {
+      "stretch95": 0.286,
+      "flipPct": 0.29,
+      "tris": 6882
+     }
+    },
+    {
+     "name": "jab",
+     "knees": {
+      "stretch95": 0.193,
+      "flipPct": 0.86,
+      "tris": 9635
+     },
+     "elbows": {
+      "stretch95": 0.404,
+      "flipPct": 1.15,
+      "tris": 2441
+     },
+     "shoulders": {
+      "stretch95": 0.624,
+      "flipPct": 1.96,
+      "tris": 3882
+     },
+     "hips": {
+      "stretch95": 0.975,
+      "flipPct": 1.92,
+      "tris": 3481
+     },
+     "fingers": {
+      "stretch95": 0,
+      "flipPct": 0.99,
+      "tris": 908
+     },
+     "face": {
+      "stretch95": 0.405,
+      "flipPct": 0.44,
+      "tris": 2051
+     },
+     "torso": {
+      "stretch95": 0.486,
+      "flipPct": 1.54,
+      "tris": 6882
+     }
+    },
+    {
+     "name": "hook",
+     "knees": {
+      "stretch95": 0.177,
+      "flipPct": 0.56,
+      "tris": 9635
+     },
+     "elbows": {
+      "stretch95": 0.442,
+      "flipPct": 1.35,
+      "tris": 2441
+     },
+     "shoulders": {
+      "stretch95": 0.519,
+      "flipPct": 1.73,
+      "tris": 3882
+     },
+     "hips": {
+      "stretch95": 0.729,
+      "flipPct": 1.49,
+      "tris": 3481
+     },
+     "fingers": {
+      "stretch95": 0,
+      "flipPct": 1.54,
+      "tris": 908
+     },
+     "face": {
+      "stretch95": 0.493,
+      "flipPct": 0.59,
+      "tris": 2051
+     },
+     "torso": {
+      "stretch95": 0.361,
+      "flipPct": 0.92,
+      "tris": 6882
+     }
+    },
+    {
+     "name": "uppercut",
+     "knees": {
+      "stretch95": 0.129,
+      "flipPct": 0.39,
+      "tris": 9635
+     },
+     "elbows": {
+      "stretch95": 0.374,
+      "flipPct": 0.78,
+      "tris": 2441
+     },
+     "shoulders": {
+      "stretch95": 0.594,
+      "flipPct": 2.47,
+      "tris": 3882
+     },
+     "hips": {
+      "stretch95": 0.513,
+      "flipPct": 0.57,
+      "tris": 3481
+     },
+     "fingers": {
+      "stretch95": 0,
+      "flipPct": 0.22,
+      "tris": 908
+     },
+     "face": {
+      "stretch95": 0.448,
+      "flipPct": 0.49,
+      "tris": 2051
+     },
+     "torso": {
+      "stretch95": 0.329,
+      "flipPct": 0.32,
+      "tris": 6882
+     }
+    },
+    {
+     "name": "hit",
+     "knees": {
+      "stretch95": 0.147,
+      "flipPct": 0.17,
+      "tris": 9635
+     },
+     "elbows": {
+      "stretch95": 0.184,
+      "flipPct": 0.29,
+      "tris": 2441
+     },
+     "shoulders": {
+      "stretch95": 0.427,
+      "flipPct": 1.03,
+      "tris": 3882
+     },
+     "hips": {
+      "stretch95": 0.711,
+      "flipPct": 0.92,
+      "tris": 3481
+     },
+     "fingers": {
+      "stretch95": 0,
+      "flipPct": 0.44,
+      "tris": 908
+     },
+     "face": {
+      "stretch95": 0.551,
+      "flipPct": 1.71,
+      "tris": 2051
+     },
+     "torso": {
+      "stretch95": 0.373,
+      "flipPct": 0.83,
+      "tris": 6882
+     }
+    },
+    {
+     "name": "knockdown",
+     "knees": {
+      "stretch95": 0.169,
+      "flipPct": 0.29,
+      "tris": 9635
+     },
+     "elbows": {
+      "stretch95": 0.17,
+      "flipPct": 0.7,
+      "tris": 2441
+     },
+     "shoulders": {
+      "stretch95": 0.49,
+      "flipPct": 1.21,
+      "tris": 3882
+     },
+     "hips": {
+      "stretch95": 0.379,
+      "flipPct": 0.37,
+      "tris": 3481
+     },
+     "fingers": {
+      "stretch95": 0,
+      "flipPct": 1.43,
+      "tris": 908
+     },
+     "face": {
+      "stretch95": 0.406,
+      "flipPct": 0.59,
+      "tris": 2051
+     },
+     "torso": {
+      "stretch95": 0.277,
+      "flipPct": 0.2,
+      "tris": 6882
+     }
+    },
+    {
+     "name": "lifted",
+     "knees": {
+      "stretch95": 0.154,
+      "flipPct": 0.47,
+      "tris": 9635
+     },
+     "elbows": {
+      "stretch95": 0.167,
+      "flipPct": 0.2,
+      "tris": 2441
+     },
+     "shoulders": {
+      "stretch95": 0.95,
+      "flipPct": 4.53,
+      "tris": 3882
+     },
+     "hips": {
+      "stretch95": 0.663,
+      "flipPct": 3.48,
+      "tris": 3481
+     },
+     "fingers": {
+      "stretch95": 0,
+      "flipPct": 0.22,
+      "tris": 908
+     },
+     "face": {
+      "stretch95": 0.448,
+      "flipPct": 0.49,
+      "tris": 2051
+     },
+     "torso": {
+      "stretch95": 0.524,
+      "flipPct": 0.9,
+      "tris": 6882
+     }
+    },
+    {
+     "name": "grabbed",
+     "knees": {
+      "stretch95": 0.102,
+      "flipPct": 0.27,
+      "tris": 9635
+     },
+     "elbows": {
+      "stretch95": 0.233,
+      "flipPct": 0.82,
+      "tris": 2441
+     },
+     "shoulders": {
+      "stretch95": 0.597,
+      "flipPct": 2.09,
+      "tris": 3882
+     },
+     "hips": {
+      "stretch95": 0.554,
+      "flipPct": 1.15,
+      "tris": 3481
+     },
+     "fingers": {
+      "stretch95": 0,
+      "flipPct": 1.21,
+      "tris": 908
+     },
+     "face": {
+      "stretch95": 0.51,
+      "flipPct": 1.61,
+      "tris": 2051
+     },
+     "torso": {
+      "stretch95": 0.487,
+      "flipPct": 1.1,
+      "tris": 6882
+     }
+    }
+   ],
+   "autorig": [
+    {
+     "name": "idle",
+     "knees": {
+      "stretch95": 0.175,
+      "flipPct": 0.04,
+      "tris": 7121
+     },
+     "elbows": {
+      "stretch95": 0.613,
+      "flipPct": 0.16,
+      "tris": 1873
+     },
+     "shoulders": {
+      "stretch95": 0.882,
+      "flipPct": 0.28,
+      "tris": 3187
+     },
+     "hips": {
+      "stretch95": 0.199,
+      "flipPct": 0,
+      "tris": 6378
+     },
+     "fingers": {
+      "stretch95": 0.168,
+      "flipPct": 0.29,
+      "tris": 1025
+     },
+     "face": {
+      "stretch95": 0.733,
+      "flipPct": 2.97,
+      "tris": 3502
+     },
+     "torso": {
+      "stretch95": 0.309,
+      "flipPct": 0.65,
+      "tris": 6194
+     }
+    },
+    {
+     "name": "jab",
+     "knees": {
+      "stretch95": 0.199,
+      "flipPct": 0.15,
+      "tris": 7121
+     },
+     "elbows": {
+      "stretch95": 0.635,
+      "flipPct": 0.16,
+      "tris": 1873
+     },
+     "shoulders": {
+      "stretch95": 1.082,
+      "flipPct": 0.38,
+      "tris": 3187
+     },
+     "hips": {
+      "stretch95": 0.423,
+      "flipPct": 1.02,
+      "tris": 6378
+     },
+     "fingers": {
+      "stretch95": 0.136,
+      "flipPct": 0.2,
+      "tris": 1025
+     },
+     "face": {
+      "stretch95": 0.671,
+      "flipPct": 3.37,
+      "tris": 3502
+     },
+     "torso": {
+      "stretch95": 0.379,
+      "flipPct": 0.77,
+      "tris": 6194
+     }
+    },
+    {
+     "name": "hook",
+     "knees": {
+      "stretch95": 0.197,
+      "flipPct": 0.08,
+      "tris": 7121
+     },
+     "elbows": {
+      "stretch95": 0.641,
+      "flipPct": 0.16,
+      "tris": 1873
+     },
+     "shoulders": {
+      "stretch95": 0.87,
+      "flipPct": 0.31,
+      "tris": 3187
+     },
+     "hips": {
+      "stretch95": 0.328,
+      "flipPct": 0.24,
+      "tris": 6378
+     },
+     "fingers": {
+      "stretch95": 0.158,
+      "flipPct": 0.29,
+      "tris": 1025
+     },
+     "face": {
+      "stretch95": 0.889,
+      "flipPct": 2.66,
+      "tris": 3502
+     },
+     "torso": {
+      "stretch95": 0.275,
+      "flipPct": 0.27,
+      "tris": 6194
+     }
+    },
+    {
+     "name": "uppercut",
+     "knees": {
+      "stretch95": 0.175,
+      "flipPct": 0.04,
+      "tris": 7121
+     },
+     "elbows": {
+      "stretch95": 0.592,
+      "flipPct": 0.11,
+      "tris": 1873
+     },
+     "shoulders": {
+      "stretch95": 1.076,
+      "flipPct": 0.82,
+      "tris": 3187
+     },
+     "hips": {
+      "stretch95": 0.203,
+      "flipPct": 0,
+      "tris": 6378
+     },
+     "fingers": {
+      "stretch95": 0.168,
+      "flipPct": 0.29,
+      "tris": 1025
+     },
+     "face": {
+      "stretch95": 0.733,
+      "flipPct": 2.97,
+      "tris": 3502
+     },
+     "torso": {
+      "stretch95": 0.335,
+      "flipPct": 0.74,
+      "tris": 6194
+     }
+    },
+    {
+     "name": "hit",
+     "knees": {
+      "stretch95": 0.162,
+      "flipPct": 0.03,
+      "tris": 7121
+     },
+     "elbows": {
+      "stretch95": 0.348,
+      "flipPct": 0.11,
+      "tris": 1873
+     },
+     "shoulders": {
+      "stretch95": 0.884,
+      "flipPct": 0.88,
+      "tris": 3187
+     },
+     "hips": {
+      "stretch95": 0.319,
+      "flipPct": 0.63,
+      "tris": 6378
+     },
+     "fingers": {
+      "stretch95": 0.169,
+      "flipPct": 0.2,
+      "tris": 1025
+     },
+     "face": {
+      "stretch95": 1.141,
+      "flipPct": 5.6,
+      "tris": 3502
+     },
+     "torso": {
+      "stretch95": 0.256,
+      "flipPct": 0.44,
+      "tris": 6194
+     }
+    },
+    {
+     "name": "knockdown",
+     "knees": {
+      "stretch95": 0.239,
+      "flipPct": 0.2,
+      "tris": 7121
+     },
+     "elbows": {
+      "stretch95": 0.362,
+      "flipPct": 0.21,
+      "tris": 1873
+     },
+     "shoulders": {
+      "stretch95": 0.847,
+      "flipPct": 0.69,
+      "tris": 3187
+     },
+     "hips": {
+      "stretch95": 0.149,
+      "flipPct": 0.02,
+      "tris": 6378
+     },
+     "fingers": {
+      "stretch95": 0.205,
+      "flipPct": 0.39,
+      "tris": 1025
+     },
+     "face": {
+      "stretch95": 0.786,
+      "flipPct": 3.6,
+      "tris": 3502
+     },
+     "torso": {
+      "stretch95": 0.27,
+      "flipPct": 0.23,
+      "tris": 6194
+     }
+    },
+    {
+     "name": "lifted",
+     "knees": {
+      "stretch95": 0.195,
+      "flipPct": 0.1,
+      "tris": 7121
+     },
+     "elbows": {
+      "stretch95": 0.361,
+      "flipPct": 0,
+      "tris": 1873
+     },
+     "shoulders": {
+      "stretch95": 1.412,
+      "flipPct": 2.95,
+      "tris": 3187
+     },
+     "hips": {
+      "stretch95": 0.357,
+      "flipPct": 0.49,
+      "tris": 6378
+     },
+     "fingers": {
+      "stretch95": 0.168,
+      "flipPct": 0.29,
+      "tris": 1025
+     },
+     "face": {
+      "stretch95": 0.739,
+      "flipPct": 2.97,
+      "tris": 3502
+     },
+     "torso": {
+      "stretch95": 0.436,
+      "flipPct": 1.68,
+      "tris": 6194
+     }
+    },
+    {
+     "name": "grabbed",
+     "knees": {
+      "stretch95": 0.188,
+      "flipPct": 0.03,
+      "tris": 7121
+     },
+     "elbows": {
+      "stretch95": 0.407,
+      "flipPct": 0.37,
+      "tris": 1873
+     },
+     "shoulders": {
+      "stretch95": 1.155,
+      "flipPct": 0.25,
+      "tris": 3187
+     },
+     "hips": {
+      "stretch95": 0.291,
+      "flipPct": 0.41,
+      "tris": 6378
+     },
+     "fingers": {
+      "stretch95": 0.187,
+      "flipPct": 0.59,
+      "tris": 1025
+     },
+     "face": {
+      "stretch95": 0.918,
+      "flipPct": 5.17,
+      "tris": 3502
+     },
+     "torso": {
+      "stretch95": 0.263,
+      "flipPct": 0.13,
+      "tris": 6194
+     }
+    }
+   ]
+  },
+  "quick": {
+   "id": "quick",
+   "info": {
+    "bones": 52,
+    "skinned": 1,
+    "verts": 6613,
+    "box": [
+     [
+      -0.219,
+      0,
+      -0.101
+     ],
+     [
+      0.219,
+      1,
+      0.101
+     ]
+    ],
+    "list": [
+     {
+      "n": "bone_0",
+      "p": null,
+      "xyz": [
+       0.002,
+       0.576,
+       -0.021
+      ]
+     },
+     {
+      "n": "bone_1",
+      "p": "bone_0",
+      "xyz": [
+       0.002,
+       0.627,
+       -0.025
+      ]
+     },
+     {
+      "n": "bone_2",
+      "p": "bone_1",
+      "xyz": [
+       0.002,
+       0.685,
+       -0.029
+      ]
+     },
+     {
+      "n": "bone_3",
+      "p": "bone_2",
+      "xyz": [
+       0.002,
+       0.752,
+       -0.037
+      ]
+     },
+     {
+      "n": "bone_4",
+      "p": "bone_3",
+      "xyz": [
+       0.002,
+       0.83,
+       -0.041
+      ]
+     },
+     {
+      "n": "bone_5",
+      "p": "bone_4",
+      "xyz": [
+       0.002,
+       0.885,
+       -0.021
+      ]
+     },
+     {
+      "n": "bone_6",
+      "p": "bone_3",
+      "xyz": [
+       0.033,
+       0.814,
+       -0.041
+      ]
+     },
+     {
+      "n": "bone_7",
+      "p": "bone_6",
+      "xyz": [
+       0.092,
+       0.783,
+       -0.041
+      ]
+     },
+     {
+      "n": "bone_8",
+      "p": "bone_7",
+      "xyz": [
+       0.143,
+       0.67,
+       -0.045
+      ]
+     },
+     {
+      "n": "bone_9",
+      "p": "bone_8",
+      "xyz": [
+       0.197,
+       0.549,
+       -0.025
+      ]
+     },
+     {
+      "n": "bone_10",
+      "p": "bone_9",
+      "xyz": [
+       0.193,
+       0.521,
+       -0.01
+      ]
+     },
+     {
+      "n": "bone_11",
+      "p": "bone_10",
+      "xyz": [
+       0.189,
+       0.498,
+       0.002
+      ]
+     },
+     {
+      "n": "bone_12",
+      "p": "bone_11",
+      "xyz": [
+       0.189,
+       0.482,
+       0.01
+      ]
+     },
+     {
+      "n": "bone_13",
+      "p": "bone_9",
+      "xyz": [
+       0.213,
+       0.478,
+       0.002
+      ]
+     },
+     {
+      "n": "bone_14",
+      "p": "bone_13",
+      "xyz": [
+       0.213,
+       0.463,
+       0.002
+      ]
+     },
+     {
+      "n": "bone_15",
+      "p": "bone_14",
+      "xyz": [
+       0.213,
+       0.451,
+       0.002
+      ]
+     },
+     {
+      "n": "bone_16",
+      "p": "bone_9",
+      "xyz": [
+       0.213,
+       0.475,
+       -0.014
+      ]
+     },
+     {
+      "n": "bone_17",
+      "p": "bone_16",
+      "xyz": [
+       0.213,
+       0.459,
+       -0.01
+      ]
+     },
+     {
+      "n": "bone_18",
+      "p": "bone_17",
+      "xyz": [
+       0.209,
+       0.443,
+       -0.01
+      ]
+     },
+     {
+      "n": "bone_19",
+      "p": "bone_9",
+      "xyz": [
+       0.213,
+       0.475,
+       -0.025
+      ]
+     },
+     {
+      "n": "bone_20",
+      "p": "bone_19",
+      "xyz": [
+       0.209,
+       0.459,
+       -0.021
+      ]
+     },
+     {
+      "n": "bone_21",
+      "p": "bone_20",
+      "xyz": [
+       0.205,
+       0.447,
+       -0.021
+      ]
+     },
+     {
+      "n": "bone_22",
+      "p": "bone_9",
+      "xyz": [
+       0.209,
+       0.482,
+       -0.037
+      ]
+     },
+     {
+      "n": "bone_23",
+      "p": "bone_22",
+      "xyz": [
+       0.209,
+       0.467,
+       -0.037
+      ]
+     },
+     {
+      "n": "bone_24",
+      "p": "bone_23",
+      "xyz": [
+       0.209,
+       0.459,
+       -0.037
+      ]
+     },
+     {
+      "n": "bone_25",
+      "p": "bone_3",
+      "xyz": [
+       -0.029,
+       0.814,
+       -0.041
+      ]
+     },
+     {
+      "n": "bone_26",
+      "p": "bone_25",
+      "xyz": [
+       -0.088,
+       0.783,
+       -0.041
+      ]
+     },
+     {
+      "n": "bone_27",
+      "p": "bone_26",
+      "xyz": [
+       -0.139,
+       0.67,
+       -0.049
+      ]
+     },
+     {
+      "n": "bone_28",
+      "p": "bone_27",
+      "xyz": [
+       -0.193,
+       0.549,
+       -0.029
+      ]
+     },
+     {
+      "n": "bone_29",
+      "p": "bone_28",
+      "xyz": [
+       -0.189,
+       0.521,
+       -0.014
+      ]
+     },
+     {
+      "n": "bone_30",
+      "p": "bone_29",
+      "xyz": [
+       -0.186,
+       0.498,
+       -0.002
+      ]
+     },
+     {
+      "n": "bone_31",
+      "p": "bone_30",
+      "xyz": [
+       -0.182,
+       0.482,
+       0.006
+      ]
+     },
+     {
+      "n": "bone_32",
+      "p": "bone_28",
+      "xyz": [
+       -0.205,
+       0.482,
+       0.002
+      ]
+     },
+     {
+      "n": "bone_33",
+      "p": "bone_32",
+      "xyz": [
+       -0.209,
+       0.467,
+       0.002
+      ]
+     },
+     {
+      "n": "bone_34",
+      "p": "bone_33",
+      "xyz": [
+       -0.209,
+       0.451,
+       0.002
+      ]
+     },
+     {
+      "n": "bone_35",
+      "p": "bone_28",
+      "xyz": [
+       -0.209,
+       0.478,
+       -0.014
+      ]
+     },
+     {
+      "n": "bone_36",
+      "p": "bone_35",
+      "xyz": [
+       -0.209,
+       0.463,
+       -0.01
+      ]
+     },
+     {
+      "n": "bone_37",
+      "p": "bone_36",
+      "xyz": [
+       -0.205,
+       0.447,
+       -0.006
+      ]
+     },
+     {
+      "n": "bone_38",
+      "p": "bone_28",
+      "xyz": [
+       -0.209,
+       0.475,
+       -0.025
+      ]
+     },
+     {
+      "n": "bone_39",
+      "p": "bone_38",
+      "xyz": [
+       -0.205,
+       0.459,
+       -0.021
+      ]
+     },
+     {
+      "n": "bone_40",
+      "p": "bone_39",
+      "xyz": [
+       -0.201,
+       0.447,
+       -0.021
+      ]
+     },
+     {
+      "n": "bone_41",
+      "p": "bone_28",
+      "xyz": [
+       -0.205,
+       0.486,
+       -0.037
+      ]
+     },
+     {
+      "n": "bone_42",
+      "p": "bone_41",
+      "xyz": [
+       -0.205,
+       0.471,
+       -0.037
+      ]
+     },
+     {
+      "n": "bone_43",
+      "p": "bone_42",
+      "xyz": [
+       -0.201,
+       0.459,
+       -0.037
+      ]
+     },
+     {
+      "n": "bone_44",
+      "p": "bone_0",
+      "xyz": [
+       0.053,
+       0.549,
+       -0.018
+      ]
+     },
+     {
+      "n": "bone_45",
+      "p": "bone_44",
+      "xyz": [
+       0.076,
+       0.314,
+       -0.025
+      ]
+     },
+     {
+      "n": "bone_46",
+      "p": "bone_45",
+      "xyz": [
+       0.1,
+       0.064,
+       -0.037
+      ]
+     },
+     {
+      "n": "bone_47",
+      "p": "bone_46",
+      "xyz": [
+       0.115,
+       0.01,
+       0.053
+      ]
+     },
+     {
+      "n": "bone_48",
+      "p": "bone_0",
+      "xyz": [
+       -0.045,
+       0.549,
+       -0.018
+      ]
+     },
+     {
+      "n": "bone_49",
+      "p": "bone_48",
+      "xyz": [
+       -0.072,
+       0.314,
+       -0.025
+      ]
+     },
+     {
+      "n": "bone_50",
+      "p": "bone_49",
+      "xyz": [
+       -0.096,
+       0.064,
+       -0.037
+      ]
+     },
+     {
+      "n": "bone_51",
+      "p": "bone_50",
+      "xyz": [
+       -0.111,
+       0.01,
+       0.053
+      ]
+     }
+    ]
+   },
+   "mapping": {
+    "snapped": [
+     "LeftUpLeg",
+     "LeftLeg",
+     "LeftFoot",
+     "LeftToeBase",
+     "RightUpLeg",
+     "RightLeg",
+     "RightFoot",
+     "RightToeBase",
+     "Hips",
+     "Spine1",
+     "Spine2",
+     "Neck",
+     "Head",
+     "LeftArm",
+     "LeftForeArm",
+     "LeftHand",
+     "LeftShoulder",
+     "RightArm",
+     "RightForeArm",
+     "RightHand",
+     "RightShoulder"
+    ],
+    "ms": 898
+   },
+   "unirig": [
+    {
+     "name": "idle",
+     "knees": {
+      "stretch95": 0.292,
+      "flipPct": 0.15,
+      "tris": 2721
+     },
+     "elbows": {
+      "stretch95": 1.581,
+      "flipPct": 2.7,
+      "tris": 1036
+     },
+     "shoulders": {
+      "stretch95": 0.883,
+      "flipPct": 5.41,
+      "tris": 924
+     },
+     "hips": {
+      "stretch95": 2.555,
+      "flipPct": 7.17,
+      "tris": 1659
+     },
+     "fingers": {
+      "stretch95": 0,
+      "flipPct": 0,
+      "tris": 1027
+     },
+     "face": {
+      "stretch95": 0.317,
+      "flipPct": 0.07,
+      "tris": 1499
+     },
+     "torso": {
+      "stretch95": 3.103,
+      "flipPct": 1.6,
+      "tris": 1060
+     }
+    },
+    {
+     "name": "jab",
+     "knees": {
+      "stretch95": 0.233,
+      "flipPct": 0.18,
+      "tris": 2721
+     },
+     "elbows": {
+      "stretch95": 1.647,
+      "flipPct": 3.19,
+      "tris": 1036
+     },
+     "shoulders": {
+      "stretch95": 0.975,
+      "flipPct": 7.36,
+      "tris": 924
+     },
+     "hips": {
+      "stretch95": 1.474,
+      "flipPct": 3.68,
+      "tris": 1659
+     },
+     "fingers": {
+      "stretch95": 0,
+      "flipPct": 0,
+      "tris": 1027
+     },
+     "face": {
+      "stretch95": 0.284,
+      "flipPct": 0.13,
+      "tris": 1499
+     },
+     "torso": {
+      "stretch95": 3.176,
+      "flipPct": 2.55,
+      "tris": 1060
+     }
+    },
+    {
+     "name": "hook",
+     "knees": {
+      "stretch95": 0.241,
+      "flipPct": 0.04,
+      "tris": 2721
+     },
+     "elbows": {
+      "stretch95": 1.637,
+      "flipPct": 3.19,
+      "tris": 1036
+     },
+     "shoulders": {
+      "stretch95": 0.827,
+      "flipPct": 5.95,
+      "tris": 924
+     },
+     "hips": {
+      "stretch95": 1.516,
+      "flipPct": 4.52,
+      "tris": 1659
+     },
+     "fingers": {
+      "stretch95": 0,
+      "flipPct": 0,
+      "tris": 1027
+     },
+     "face": {
+      "stretch95": 0.33,
+      "flipPct": 0.27,
+      "tris": 1499
+     },
+     "torso": {
+      "stretch95": 3.151,
+      "flipPct": 1.6,
+      "tris": 1060
+     }
+    },
+    {
+     "name": "uppercut",
+     "knees": {
+      "stretch95": 0.292,
+      "flipPct": 0.15,
+      "tris": 2721
+     },
+     "elbows": {
+      "stretch95": 1.713,
+      "flipPct": 4.05,
+      "tris": 1036
+     },
+     "shoulders": {
+      "stretch95": 0.995,
+      "flipPct": 5.74,
+      "tris": 924
+     },
+     "hips": {
+      "stretch95": 2.575,
+      "flipPct": 7.72,
+      "tris": 1659
+     },
+     "fingers": {
+      "stretch95": 0,
+      "flipPct": 0,
+      "tris": 1027
+     },
+     "face": {
+      "stretch95": 0.317,
+      "flipPct": 0.07,
+      "tris": 1499
+     },
+     "torso": {
+      "stretch95": 3.206,
+      "flipPct": 1.23,
+      "tris": 1060
+     }
+    },
+    {
+     "name": "hit",
+     "knees": {
+      "stretch95": 0.437,
+      "flipPct": 0.11,
+      "tris": 2721
+     },
+     "elbows": {
+      "stretch95": 1.377,
+      "flipPct": 1.35,
+      "tris": 1036
+     },
+     "shoulders": {
+      "stretch95": 0.661,
+      "flipPct": 2.6,
+      "tris": 924
+     },
+     "hips": {
+      "stretch95": 2.981,
+      "flipPct": 9.46,
+      "tris": 1659
+     },
+     "fingers": {
+      "stretch95": 0,
+      "flipPct": 0,
+      "tris": 1027
+     },
+     "face": {
+      "stretch95": 0.566,
+      "flipPct": 0.4,
+      "tris": 1499
+     },
+     "torso": {
+      "stretch95": 2.902,
+      "flipPct": 1.6,
+      "tris": 1060
+     }
+    },
+    {
+     "name": "knockdown",
+     "knees": {
+      "stretch95": 0.427,
+      "flipPct": 0.22,
+      "tris": 2721
+     },
+     "elbows": {
+      "stretch95": 1.34,
+      "flipPct": 1.45,
+      "tris": 1036
+     },
+     "shoulders": {
+      "stretch95": 0.632,
+      "flipPct": 2.6,
+      "tris": 924
+     },
+     "hips": {
+      "stretch95": 2.535,
+      "flipPct": 7.47,
+      "tris": 1659
+     },
+     "fingers": {
+      "stretch95": 0,
+      "flipPct": 0,
+      "tris": 1027
+     },
+     "face": {
+      "stretch95": 0.259,
+      "flipPct": 0.2,
+      "tris": 1499
+     },
+     "torso": {
+      "stretch95": 3.021,
+      "flipPct": 1.51,
+      "tris": 1060
+     }
+    },
+    {
+     "name": "lifted",
+     "knees": {
+      "stretch95": 0.229,
+      "flipPct": 0.22,
+      "tris": 2721
+     },
+     "elbows": {
+      "stretch95": 2.378,
+      "flipPct": 3.67,
+      "tris": 1036
+     },
+     "shoulders": {
+      "stretch95": 1.629,
+      "flipPct": 10.93,
+      "tris": 924
+     },
+     "hips": {
+      "stretch95": 2.286,
+      "flipPct": 6.15,
+      "tris": 1659
+     },
+     "fingers": {
+      "stretch95": 0,
+      "flipPct": 0,
+      "tris": 1027
+     },
+     "face": {
+      "stretch95": 0.317,
+      "flipPct": 0.07,
+      "tris": 1499
+     },
+     "torso": {
+      "stretch95": 3.495,
+      "flipPct": 2.36,
+      "tris": 1060
+     }
+    },
+    {
+     "name": "grabbed",
+     "knees": {
+      "stretch95": 0.232,
+      "flipPct": 0.26,
+      "tris": 2721
+     },
+     "elbows": {
+      "stretch95": 1.924,
+      "flipPct": 1.74,
+      "tris": 1036
+     },
+     "shoulders": {
+      "stretch95": 1.005,
+      "flipPct": 4.87,
+      "tris": 924
+     },
+     "hips": {
+      "stretch95": 1.76,
+      "flipPct": 4.46,
+      "tris": 1659
+     },
+     "fingers": {
+      "stretch95": 0,
+      "flipPct": 0,
+      "tris": 1027
+     },
+     "face": {
+      "stretch95": 0.493,
+      "flipPct": 0.27,
+      "tris": 1499
+     },
+     "torso": {
+      "stretch95": 3.044,
+      "flipPct": 3.3,
+      "tris": 1060
+     }
+    }
+   ],
+   "autorig": [
+    {
+     "name": "idle",
+     "knees": {
+      "stretch95": 0.179,
+      "flipPct": 0,
+      "tris": 2107
+     },
+     "elbows": {
+      "stretch95": 0.802,
+      "flipPct": 1.69,
+      "tris": 1124
+     },
+     "shoulders": {
+      "stretch95": 1.069,
+      "flipPct": 1.25,
+      "tris": 641
+     },
+     "hips": {
+      "stretch95": 0.77,
+      "flipPct": 0,
+      "tris": 1676
+     },
+     "fingers": {
+      "stretch95": 0.164,
+      "flipPct": 0.53,
+      "tris": 751
+     },
+     "face": {
+      "stretch95": 0.398,
+      "flipPct": 0.4,
+      "tris": 1736
+     },
+     "torso": {
+      "stretch95": 1.113,
+      "flipPct": 0.74,
+      "tris": 1891
+     }
+    },
+    {
+     "name": "jab",
+     "knees": {
+      "stretch95": 0.193,
+      "flipPct": 0.09,
+      "tris": 2107
+     },
+     "elbows": {
+      "stretch95": 1.006,
+      "flipPct": 2.05,
+      "tris": 1124
+     },
+     "shoulders": {
+      "stretch95": 1.44,
+      "flipPct": 1.56,
+      "tris": 641
+     },
+     "hips": {
+      "stretch95": 0.631,
+      "flipPct": 0.12,
+      "tris": 1676
+     },
+     "fingers": {
+      "stretch95": 0.118,
+      "flipPct": 0.27,
+      "tris": 751
+     },
+     "face": {
+      "stretch95": 0.304,
+      "flipPct": 0.23,
+      "tris": 1736
+     },
+     "torso": {
+      "stretch95": 1.434,
+      "flipPct": 0.9,
+      "tris": 1891
+     }
+    },
+    {
+     "name": "hook",
+     "knees": {
+      "stretch95": 0.187,
+      "flipPct": 0.05,
+      "tris": 2107
+     },
+     "elbows": {
+      "stretch95": 0.972,
+      "flipPct": 1.51,
+      "tris": 1124
+     },
+     "shoulders": {
+      "stretch95": 0.794,
+      "flipPct": 1.87,
+      "tris": 641
+     },
+     "hips": {
+      "stretch95": 0.673,
+      "flipPct": 0,
+      "tris": 1676
+     },
+     "fingers": {
+      "stretch95": 0.107,
+      "flipPct": 0.27,
+      "tris": 751
+     },
+     "face": {
+      "stretch95": 0.503,
+      "flipPct": 0.4,
+      "tris": 1736
+     },
+     "torso": {
+      "stretch95": 1.084,
+      "flipPct": 0.42,
+      "tris": 1891
+     }
+    },
+    {
+     "name": "uppercut",
+     "knees": {
+      "stretch95": 0.179,
+      "flipPct": 0,
+      "tris": 2107
+     },
+     "elbows": {
+      "stretch95": 0.813,
+      "flipPct": 1.78,
+      "tris": 1124
+     },
+     "shoulders": {
+      "stretch95": 1.327,
+      "flipPct": 3.28,
+      "tris": 641
+     },
+     "hips": {
+      "stretch95": 0.774,
+      "flipPct": 0,
+      "tris": 1676
+     },
+     "fingers": {
+      "stretch95": 0.164,
+      "flipPct": 0.53,
+      "tris": 751
+     },
+     "face": {
+      "stretch95": 0.398,
+      "flipPct": 0.4,
+      "tris": 1736
+     },
+     "torso": {
+      "stretch95": 1.247,
+      "flipPct": 1.37,
+      "tris": 1891
+     }
+    },
+    {
+     "name": "hit",
+     "knees": {
+      "stretch95": 0.144,
+      "flipPct": 0.05,
+      "tris": 2107
+     },
+     "elbows": {
+      "stretch95": 0.659,
+      "flipPct": 0.44,
+      "tris": 1124
+     },
+     "shoulders": {
+      "stretch95": 0.869,
+      "flipPct": 0.47,
+      "tris": 641
+     },
+     "hips": {
+      "stretch95": 0.888,
+      "flipPct": 0.18,
+      "tris": 1676
+     },
+     "fingers": {
+      "stretch95": 0.275,
+      "flipPct": 0.13,
+      "tris": 751
+     },
+     "face": {
+      "stretch95": 0.351,
+      "flipPct": 2.94,
+      "tris": 1736
+     },
+     "torso": {
+      "stretch95": 0.974,
+      "flipPct": 0.48,
+      "tris": 1891
+     }
+    },
+    {
+     "name": "knockdown",
+     "knees": {
+      "stretch95": 0.248,
+      "flipPct": 0.38,
+      "tris": 2107
+     },
+     "elbows": {
+      "stretch95": 0.505,
+      "flipPct": 0.36,
+      "tris": 1124
+     },
+     "shoulders": {
+      "stretch95": 0.827,
+      "flipPct": 0.78,
+      "tris": 641
+     },
+     "hips": {
+      "stretch95": 0.713,
+      "flipPct": 0,
+      "tris": 1676
+     },
+     "fingers": {
+      "stretch95": 0.177,
+      "flipPct": 0.67,
+      "tris": 751
+     },
+     "face": {
+      "stretch95": 0.467,
+      "flipPct": 0.52,
+      "tris": 1736
+     },
+     "torso": {
+      "stretch95": 0.893,
+      "flipPct": 0.42,
+      "tris": 1891
+     }
+    },
+    {
+     "name": "lifted",
+     "knees": {
+      "stretch95": 0.203,
+      "flipPct": 0.05,
+      "tris": 2107
+     },
+     "elbows": {
+      "stretch95": 1.309,
+      "flipPct": 1.33,
+      "tris": 1124
+     },
+     "shoulders": {
+      "stretch95": 1.964,
+      "flipPct": 5.62,
+      "tris": 641
+     },
+     "hips": {
+      "stretch95": 0.806,
+      "flipPct": 0.84,
+      "tris": 1676
+     },
+     "fingers": {
+      "stretch95": 0.164,
+      "flipPct": 0.53,
+      "tris": 751
+     },
+     "face": {
+      "stretch95": 0.406,
+      "flipPct": 0.4,
+      "tris": 1736
+     },
+     "torso": {
+      "stretch95": 1.576,
+      "flipPct": 2.43,
+      "tris": 1891
+     }
+    },
+    {
+     "name": "grabbed",
+     "knees": {
+      "stretch95": 0.195,
+      "flipPct": 0,
+      "tris": 2107
+     },
+     "elbows": {
+      "stretch95": 1.069,
+      "flipPct": 0.36,
+      "tris": 1124
+     },
+     "shoulders": {
+      "stretch95": 1.638,
+      "flipPct": 1.25,
+      "tris": 641
+     },
+     "hips": {
+      "stretch95": 0.51,
+      "flipPct": 0,
+      "tris": 1676
+     },
+     "fingers": {
+      "stretch95": 0.072,
+      "flipPct": 0,
+      "tris": 751
+     },
+     "face": {
+      "stretch95": 0.301,
+      "flipPct": 1.96,
+      "tris": 1736
+     },
+     "torso": {
+      "stretch95": 1.369,
+      "flipPct": 0.69,
+      "tris": 1891
+     }
+    }
+   ]
+  }
+ },
+ "momask": {}
+}

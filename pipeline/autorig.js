@@ -169,7 +169,7 @@ window.autorig = async (meshB64, refB64, opts = {}) => {
   const sample = P.filter((_, i) => i % 2 === 0);
   const { J, info, torsoW } = fitJoints(sample, H);
   // UniRig mode: snap the main joints onto UniRig's predicted joints (same limb, nearest within reach)
-  let uniJ = null, uniMap = null;
+  let uniJ = null, uniMap = null; const uniSnap = {};
   if (opts.uni) {
     uniJ = opts.uni.joints.map(a => V(a[0], a[1] - box.min.y, a[2]));
     info.snapped = [];
@@ -178,7 +178,7 @@ window.autorig = async (meshB64, refB64, opts = {}) => {
       const side = /^Left/.test(k) ? 1 : /^Right/.test(k) ? -1 : 0;
       let best = -1, bd = (/Shoulder|Spine|Neck|Hips/.test(k) ? 0.06 : 0.08) * H;
       uniJ.forEach((q, i) => { if (side && Math.sign(q.x) !== side && Math.abs(q.x) > 0.01 * H) return; if (!side && Math.abs(q.x) > 0.05 * H) return; const d = q.distanceTo(J[k]); if (d < bd) { bd = d; best = i; } });
-      if (best >= 0) { J[k] = uniJ[best].clone(); info.snapped.push(k); }
+      if (best >= 0) { J[k] = uniJ[best].clone(); info.snapped.push(k); uniSnap[k] = best; }
     }
   }
 
@@ -235,6 +235,27 @@ window.autorig = async (meshB64, refB64, opts = {}) => {
     refDir[S + 'Hand'] = rDir; // hand bone aims at the middle fingertip
     for (const f of FING) refDir[S + 'Hand' + f + '3'] = rp(S + 'Hand' + f + '3').sub(rp(S + 'Hand' + f + '2')).normalize();
   }
+  if (opts.uni) {
+    // UniRig fingers: the chains hanging off the snapped hand joint -> thumb (closest to the wrist), then index..pinky by how far forward they sit
+    const kidsOf = u => opts.uni.parent.map((pp, c) => pp === u ? c : -1).filter(c => c >= 0);
+    for (const S of ['Left', 'Right']) {
+      const h = uniSnap[S + 'Hand']; if (h === undefined) continue;
+      const chains = kidsOf(h).map(c => { const ch = [c]; let cur = c; while (true) { const k2 = kidsOf(cur); if (!k2.length) break; cur = k2[0]; ch.push(cur); } return ch; }).filter(ch => ch.length >= 2);
+      if (chains.length < 4) continue;
+      chains.sort((a, b) => uniJ[a[0]].distanceTo(uniJ[h]) - uniJ[b[0]].distanceTo(uniJ[h]));
+      const thumb = chains.length >= 5 ? chains.shift() : null;
+      chains.sort((a, b) => uniJ[b[0]].z - uniJ[a[0]].z);
+      const named = [...(thumb ? [['Thumb', thumb]] : []), ...['Index', 'Middle', 'Ring', 'Pinky'].map((f, i) => [f, chains[i]])].filter(x => x[1]);
+      for (const [f, ch] of named) {
+        const pts = ch.slice(0, 3).map(u => uniJ[u]);
+        while (pts.length < 3) pts.push(pts[pts.length - 1].clone().add(pts[pts.length - 1].clone().sub(pts[pts.length - 2] || J[S + 'Hand']).multiplyScalar(0.8)));
+        const tip = pts[2].clone().add(pts[2].clone().sub(pts[1]).multiplyScalar(0.9));
+        ['1', '2', '3', '3Tip'].forEach((suf, i) => { const q = i < 3 ? pts[i] : tip; J[S + 'Hand' + f + suf] = q.clone(); JW[S + 'Hand' + f + suf] = q.clone().applyMatrix4(T); });
+        ch.slice(0, 3).forEach((u, i) => { uniSnap[S + 'Hand' + f + (i + 1)] = u; });
+      }
+      J[S + 'HandTip'] = J[S + 'HandMiddle3Tip'] || J[S + 'HandTip']; JW[S + 'HandTip'] = J[S + 'HandTip'].clone().applyMatrix4(T);
+    }
+  }
   for (const n of KEEP) { const b = rb[n]; if (!b) continue; refQ[n] = b.getWorldQuaternion(new THREE.Quaternion()); const c = rb[MAIN_CHILD[n]]; if (c && !refDir[n]) refDir[n] = c.getWorldPosition(V()).sub(b.getWorldPosition(V())).normalize(); }
   // set bones top-down: world pos = fitted joint, world rot = ref rot swung onto the fitted direction
   const order = []; (function walk(b) { if (b.isBone && KEEP.has(strip(b.name))) order.push(b); for (const c of b.children) walk(c); })(rs);
@@ -284,16 +305,15 @@ window.autorig = async (meshB64, refB64, opts = {}) => {
       let ws2 = ws;
       // head + jaw move as one: blend Neck -> Head by height so the face never shears
       if ((best.n === 'Neck' || best.n === 'Head' || (p.y > J.Neck.y && /^Spine|Shoulder/.test(best.n))) && Math.abs(p.x) < 0.12 * H) { const g = J.Head.y - J.Neck.y, t = Math.max(0, Math.min(1, (p.y - J.Neck.y) / Math.max(0.01 * H, 0.6 * g))); /* blend only across the neck; the whole head and jaw follow Head */ const hw = t * t * (3 - 2 * t); ws.length = 0; ws.push(['Head', hw + 1e-6], ['Neck', 1 - hw + 1e-6]); }
-      if (opts.uni && !isFinger(best.n)) {
+      if (opts.uni && (!isFinger(best.n) || uniSnap[best.n] !== undefined)) {
         // UniRig weights carried over onto the Mixamo bones (fingers keep the geometric weights)
-        if (!uniMap) uniMap = opts.uni.joints.map((_, u) => {
-          const kids = opts.uni.parent.map((pp, c) => pp === u ? c : -1).filter(c => c >= 0);
-          const tail = kids.length ? kids.reduce((acc, c) => acc.add(uniJ[c]), V()).divideScalar(kids.length) : uniJ[u].clone().add(V(0, 0.02 * H, 0));
-          const mid = uniJ[u].clone().lerp(tail, 0.5);
-          let bn = 'Hips', bd2 = 1e9;
-          for (const sg of seg) { if (isFinger(sg.n)) continue; if (/^Left/.test(sg.n) && mid.x < -0.01 * H) continue; if (/^Right/.test(sg.n) && mid.x > 0.01 * H) continue; const dd = segDist(mid, sg.a, sg.b).d / sg.r; if (dd < bd2) { bd2 = dd; bn = sg.n; } }
-          return bn;
-        });
+        if (!uniMap) {
+          // each UniRig bone belongs to the Mixamo bone snapped onto it, or inherits its parent's (so a hand's bones stay on the hand)
+          const inv = {}; for (const [n, u] of Object.entries(uniSnap)) if (bi.has(n)) inv[u] = n;
+          uniMap = new Array(opts.uni.joints.length).fill(null);
+          const resolve = u => { if (uniMap[u]) return uniMap[u]; const pp = opts.uni.parent[u]; uniMap[u] = inv[u] || (pp >= 0 ? resolve(pp) : 'Hips'); return uniMap[u]; };
+          for (let u = 0; u < uniMap.length; u++) resolve(u);
+        }
         const acc = {}; for (const [u, w] of opts.uni.weights[offset + i]) { const n = uniMap[u]; acc[n] = (acc[n] || 0) + w; }
         const top = Object.entries(acc).sort((a, b) => b[1] - a[1]).slice(0, 4);
         if (top.length) { ws.length = 0; ws.push(...top); }
