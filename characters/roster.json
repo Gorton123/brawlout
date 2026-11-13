@@ -41,6 +41,14 @@
       "status": "approved",
       "made_with": "FLUX.1-schnell concept -> TRELLIS (free) -> autorig",
       "description": "London top boy, gang leader in his late 20s, black designer tracksuit with white stripes, thick gold chain, gold rings, white trainers, short skin fade haircut, trimmed beard, stern confident face, Black British man"
+    },
+    {
+      "id": "quick",
+      "name": "quick",
+      "slot": "quick",
+      "status": "approved",
+      "made_with": "FLUX.1-schnell concept -> TRELLIS (free) -> autorig",
+      "description": "Quick Lad, skinny young British lad around 20, grey zip hoodie, navy tracksuit bottoms, white trainers, buzz cut hair, cheeky grin, pub fighter"
     }
   ]
 }
