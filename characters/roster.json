@@ -49,6 +49,14 @@
       "status": "approved",
       "made_with": "FLUX.1-schnell concept -> TRELLIS (free) -> autorig",
       "description": "Quick Lad, skinny young British lad around 20, grey zip hoodie, navy tracksuit bottoms, white trainers, buzz cut hair, cheeky grin, pub fighter"
+    },
+    {
+      "id": "big",
+      "name": "big",
+      "slot": "big",
+      "status": "approved",
+      "made_with": "FLUX.1-schnell concept -> TRELLIS (free) -> autorig",
+      "description": "Big Lad, huge heavyset bald British bouncer in his 40s, black bomber jacket, dark jeans, black boots, thick neck, tattooed forearms, angry face"
     }
   ]
 }
