@@ -12,6 +12,18 @@
   "description": "Roman murmillo gladiator, bronze full-face crested fish helmet with grille visor, leather arm guard on one arm, white loincloth with wide belt, bronze leg greaves, muscular tanned body, barefoot sandals"
  },
  {
+  "id": "grunt",
+  "description": "grey humanoid alien soldier, smooth grey skin, large black almond eyes, segmented dark armour plates on chest and shoulders, three-fingered gloves, sci-fi"
+ },
+ {
+  "id": "hero_rome",
+  "description": "main character as a Roman gladiator (concept image provided)"
+ },
+ {
+  "id": "hero_moon",
+  "description": "main character as an astronaut (concept image provided)"
+ },
+ {
   "id": "champion",
   "description": "Roman champion gladiator boss, giant muscular man, ornate gold armour breastplate, red cape, gold plumed helmet with open face and beard, gold arm and leg guards, battle scars"
  },
@@ -22,10 +34,6 @@
  {
   "id": "runner",
   "description": "lean London street runner, dark green hooded tracksuit zipped up, face partly covered by a black bandana, black running trainers, slim athletic build, white British man"
- },
- {
-  "id": "grunt",
-  "description": "grey humanoid alien soldier, smooth grey skin, large black almond eyes, segmented dark armour plates on chest and shoulders, three-fingered gloves, sci-fi"
  },
  {
   "id": "skitter",
