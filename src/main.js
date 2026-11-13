@@ -114,7 +114,7 @@ class Game {
     const startEl = document.querySelector('#title .start');
     startEl.textContent = 'LOADING FIGHTERS...';
     const finish = () => { this.loading = false; startEl.textContent = this.input.touch ? 'TAP TO FIGHT' : 'CLICK OR PRESS A TO FIGHT'; };
-    if (window.__MODELS) loadModels(window.__MODELS, { brawler: 1.0, hero: 0.98, quick: 0.95, big: 1.12, grunt: 0.98, gladiator: 1.0, topboy: 1.06 }).then(finish, e => { console.warn(e); finish(); });
+    if (window.__MODELS) loadModels(window.__MODELS, { brawler: 1.0, hero: 0.98, hero_rome: 0.98, hero_moon: 0.98, quick: 0.95, big: 1.12, grunt: 0.98, gladiator: 1.0, topboy: 1.06, champion: 1.12, brute: 1.15, skitter: 0.92, murmillo: 0.98, runner: 0.95, roadman: 1.0 }).then(finish, e => { console.warn(e); finish(); });
     else finish();
     requestAnimationFrame(t => this.loop(t));
   }

@@ -24,15 +24,15 @@ export const TYPES = {
   brawler: V('brawler', 'brawler', {}), quick: V('quick', 'quick', {}), big: V('big', 'big', {}),
   // Rome
   gladiator: V('brawler', 'gladiator', { name: 'GLADIATOR', hp: 110, shield: 4, helmet: 'galea', tint: [1.0, 0.9, 0.8], ownLook: true }),
-  murmillo: V('quick', 'quick', { name: 'MURMILLO', hp: 80, helmet: 'murmillo', tint: [1.0, 0.92, 0.85] }),
-  champion: V('big', 'gladiator', { name: 'CHAMPION', hp: 240, shield: 6, helmet: 'galea', gold: true, tint: [1.0, 0.9, 0.8], ownLook: true, lookTint: [1.08, 0.95, 0.7] }),
+  murmillo: V('quick', 'murmillo', { name: 'MURMILLO', hp: 80, helmet: 'murmillo', tint: [1.0, 0.92, 0.85], ownLook: true, fallback: 'quick' }),
+  champion: V('big', 'champion', { name: 'CHAMPION', hp: 240, shield: 6, helmet: 'galea', gold: true, tint: [1.08, 0.95, 0.7], ownLook: true, fallback: 'gladiator' }),
   // Moon
   grunt: V('brawler', 'grunt', { name: 'ALIEN GRUNT', hp: 100 }),
-  skitter: V('quick', 'grunt', { name: 'SKITTER', hp: 65, speed: 2.7, tint: [0.65, 1.0, 0.8] }),
-  brute: V('big', 'grunt', { name: 'ALIEN BRUTE', hp: 260, tint: [1.0, 0.62, 0.9] }),
+  skitter: V('quick', 'skitter', { name: 'SKITTER', hp: 65, speed: 2.7, tint: [0.65, 1.0, 0.8], ownLook: true, fallback: 'grunt' }),
+  brute: V('big', 'brute', { name: 'ALIEN BRUTE', hp: 260, tint: [1.0, 0.62, 0.9], ownLook: true, fallback: 'grunt' }),
   // Street
-  roadman: V('brawler', 'brawler', { name: 'ROADMAN', hp: 100, hood: true, tint: [0.42, 0.44, 0.5] }),
-  runner: V('quick', 'quick', { name: 'RUNNER', hp: 70, hood: true, tint: [0.5, 0.5, 0.58] }),
+  roadman: V('brawler', 'roadman', { name: 'ROADMAN', hp: 100, hood: true, tint: [0.42, 0.44, 0.5], ownLook: true, fallback: 'brawler' }),
+  runner: V('quick', 'runner', { name: 'RUNNER', hp: 70, hood: true, tint: [0.5, 0.5, 0.58], ownLook: true, fallback: 'quick' }),
   topboy: V('big', 'topboy', { name: 'TOP BOY', hp: 230, tint: [0.55, 0.55, 0.62], chain: true, ownLook: true, scale: 1.08 }),
 };
 for (const t of Object.values(TYPES)) if (t.model === 'grunt' && !t.tint) t.tint = [1, 1, 1];
@@ -64,7 +64,7 @@ export class Enemy {
     this.vel = new THREE.Vector3(); this.attackCd = 1.2 + Math.random() * 1.5;
     this.stunned = 0; this.recentDmg = 0; this.ragT = 0; this.deadT = 0; this.chargeCd = 3 + Math.random() * 2;
     this.heldBy = null; this.rootOverride = null; this.aggro = Math.min(1.6, 1 + (wave - 1) * 0.06);
-    this.inst = Models.ready ? (instance(T.model) || instance(T.kind)) : null;
+    this.inst = Models.ready ? (instance(T.model) || (T.fallback && instance(T.fallback)) || instance(T.kind)) : null;
     const M = !!this.inst;
     let sk;
     if (M) { this.rig = this.inst.prof.rig; sk = buildRigSkeleton(this.rig); this.hipsBaseY = this.rig.hipsY; }
@@ -507,7 +507,7 @@ export class Enemy {
       h.traverse(o => { if (o.isMesh) o.castShadow = true; });
       g.scene.add(h); this.gear.push({ obj: h, part: 'head', off: new THREE.Vector3(0, 0.0, 0) });
     }
-    if (T.hood) {
+    if (T.hood && !(T.ownLook && this.inst && this.inst.modelKey === T.model)) {
       const hood = new THREE.Mesh(new THREE.SphereGeometry(hr * 1.2, 18, 12, 0, Math.PI * 2, 0, Math.PI * 0.62), new THREE.MeshStandardMaterial({ color: 0x1c1d22, roughness: 0.95 }));
       hood.scale.set(1, 1.05, 1.1); const hg = new THREE.Group(); hood.position.set(0, hr * 0.05, -hr * 0.15); hg.add(hood); g.scene.add(hg);
       this.gear.push({ obj: hg, part: 'head', off: new THREE.Vector3() });

@@ -141,11 +141,16 @@ function aimBone(bone, child, target) {
   bone.quaternion.copy(_wq2.invert().multiply(_wq));
   bone.updateWorldMatrix(false, true);
 }
+// which player skin to wear: each arena has its own (gladiator in Rome, astronaut on the Moon) when it exists
+export function heroKey(game) {
+  const k = { rome: 'hero_rome', moon: 'hero_moon' }[game && game.stageKey];
+  return (k && Models.types[k]) ? k : Models.types.hero ? 'hero' : 'quick';
+}
 // First-person body: the real player model, animated by Mixamo clips, arms driven by IK to the hand targets
 class FPBody {
   constructor(player) {
     this.player = player; const g = player.game;
-    this.inst = instance(Models.types.hero ? 'hero' : 'quick');
+    this.key = heroKey(g); this.inst = instance(this.key);
     this.noTwistBones = !!Models.types.hero;
     this.model = this.inst.model; g.scene.add(this.model);
     if (!Models.types.hero) for (const m of this.inst.mats) m.color.setRGB(0.75, 0.78, 0.95);
@@ -292,7 +297,7 @@ const UPPER = /(Spine|Neck|Head|Shoulder|Arm|ForeArm|Hand)/;
 class TPBody {
   constructor(player) {
     this.player = player; const g = player.game;
-    this.inst = instance(Models.types.hero ? 'hero' : 'quick'); this.model = this.inst.model; g.scene.add(this.model);
+    this.key = heroKey(g); this.inst = instance(this.key); this.model = this.inst.model; g.scene.add(this.model);
     if (!Models.types.hero) for (const m of this.inst.mats) { m.color.setRGB(0.55, 0.75, 1.25); m.emissive && m.emissive.setRGB(0.02, 0.04, 0.09); }
     this.B = this.inst.bones; this.model.visible = false;
     this.mixer = new THREE.AnimationMixer(this.model);
@@ -367,7 +372,7 @@ class PlayerBody {
   }
   show(v) {
     if (v && !this.model && Models.ready && Models.types.quick) {
-      this.inst = instance(Models.types.hero ? 'hero' : 'quick');
+      this.key = heroKey(this.game); this.inst = instance(this.key);
       if (this.inst) {
         this.model = this.inst.model; this.game.scene.add(this.model);
         const sk = buildRigSkeleton(this.inst.prof.rig); this.root = sk.root; this.bones = sk.bones;
@@ -503,6 +508,12 @@ export class Player {
     if (this.lift) this.updateLift(dtR, ws);
     // ---------- arms ----------
     for (const arm of Object.values(this.arms)) this.updateArm(arm, pdt);
+    // arena changed: swap to that arena's player skin
+    if (this.fp && this.fp.key !== heroKey(g)) {
+      for (const b of [this.fp, this.tp]) if (b && b.model) b.model.parent && b.model.parent.remove(b.model);
+      this.fp = null; this.tp = null;
+      if (this.body && this.body.model && this.body.key !== heroKey(g)) { this.body.model.parent && this.body.model.parent.remove(this.body.model); this.body.model = null; }
+    }
     if (!this.fp && Models.ready && Models.types.quick) {
       try { this.fp = new FPBody(this); for (const a of Object.values(this.arms)) a.useModel(); } catch (e) { console.warn('fp body', e); this.fp = null; }
     }
