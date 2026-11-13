@@ -33,6 +33,14 @@
         "raw": "https://d8j0ntlcm91z4.cloudfront.net/user_31Xtid4xciseq6HaOQywNLJpJL9/hf_20261110_203632_72c5beba-fcb1-4ef5-a123-dbc3e4b37024.glb"
       },
       "made_with": "Higgsfield gpt_image_2_6 concept -> Tripo H3.1 (detailed textures)"
+    },
+    {
+      "id": "topboy",
+      "name": "topboy",
+      "slot": "topboy",
+      "status": "approved",
+      "made_with": "FLUX.1-schnell concept -> TRELLIS (free) -> autorig",
+      "description": "London top boy, gang leader in his late 20s, black designer tracksuit with white stripes, thick gold chain, gold rings, white trainers, short skin fade haircut, trimmed beard, stern confident face, Black British man"
     }
   ]
 }
