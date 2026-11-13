@@ -1,0 +1,19 @@
+{
+ "unirig_hero_error_jasongzy": "",
+ "unirig_hero_s": 86,
+ "unirig_hero_space": "faisal786U/unirig-api",
+ "unirig_brawler_error_jasongzy": "",
+ "unirig_brawler_s": 85,
+ "unirig_brawler_space": "faisal786U/unirig-api",
+ "unirig_quick_error_jasongzy": "",
+ "unirig_quick_s": 73,
+ "unirig_quick_space": "faisal786U/unirig-api",
+ "unirig_big_error_jasongzy": "",
+ "unirig_big_error_faisal786U": "You have exceeded your free ZeroGPU quota (90s requested vs. 68s left). Try again in 23:10:57. Subscribe to Hugging Face PRO to get 40 min of ZeroGPU quota a day - https://huggingface.co/subscribe/pro?from=ZeroGPU",
+ "unirig_gladiator_error_jasongzy": "",
+ "unirig_gladiator_error_faisal786U": "You have exceeded your free ZeroGPU quota (90s requested vs. 68s left). Try again in 22:55:54. Subscribe to Hugging Face PRO to get 40 min of ZeroGPU quota a day - https://huggingface.co/subscribe/pro?from=ZeroGPU",
+ "unirig_topboy_error_jasongzy": "",
+ "unirig_topboy_error_faisal786U": "You have exceeded your free ZeroGPU quota (90s requested vs. 68s left). Try again in 22:40:52. Subscribe to Hugging Face PRO to get 40 min of ZeroGPU quota a day - https://huggingface.co/subscribe/pro?from=ZeroGPU",
+ "lion_generate_s": "failed: concept image failed",
+ "total_unirig_s": 5653
+}
