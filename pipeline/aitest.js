@@ -152,11 +152,19 @@ window.bvhInfo = (text) => { const r = new BVHLoader().parse(text); return { bon
 window.bvhToClip = async (charB64, bvhText, name) => {
   const bv = new BVHLoader().parse(bvhText);
   const bRoot = new THREE.Group(); bRoot.add(bv.skeleton.bones[0]); bRoot.updateMatrixWorld(true);
-  const bb = {}; for (const b of bv.skeleton.bones) { const m = BVH2MIX[b.name.replace(/^mixamorig:?/, '')]; if (m && !bb[m]) bb[m] = b; }
+  const bb = {}; for (const b of bv.skeleton.bones) { let m = BVH2MIX[b.name.replace(/^mixamorig:?/, '')]; if (m === 'Spine' && bb.Spine) m = bb.Spine1 ? 'Spine2' : 'Spine1'; if (m && !bb[m]) bb[m] = b; }
   const missing = CHAIN.flat().filter((n, i, a) => a.indexOf(n) === i && !bb[n] && !/Shoulder|Toe|Spine1|Spine2/.test(n));
   const g = await load(charB64); const tgt = g.scene; tgt.updateMatrixWorld(true);
   const tb = {}; tgt.traverse(o => { if (o.isBone) tb[strip(o.name)] = o; });
   const restLocal = {}; for (const [n, b] of Object.entries(tb)) restLocal[n] = b.quaternion.clone();
+  // rest-pose correction for the torso chain: MoMask's skeleton leans its neck/spine differently at rest
+  const corr = {};
+  { bv.skeleton.pose(); bRoot.updateMatrixWorld(true); tgt.updateMatrixWorld(true);
+    const w = b => b.getWorldPosition(new THREE.Vector3());
+    for (const [a, c] of [['Spine', 'Spine1'], ['Spine1', 'Spine2'], ['Spine2', 'Neck'], ['Neck', 'Head']]) {
+      if (!bb[a] || !bb[c] || !tb[a] || !tb[c]) continue;
+      corr[a] = new THREE.Quaternion().setFromUnitVectors(w(bb[c]).sub(w(bb[a])).normalize(), w(tb[c]).sub(w(tb[a])).normalize());
+    } }
   const mixer = new THREE.AnimationMixer(bRoot); mixer.clipAction(bv.clip).play();
   const fps = 30, nF = Math.max(2, Math.round(bv.clip.duration * fps));
   const tracks = {}; const hipsPos = [];
@@ -181,13 +189,13 @@ window.bvhToClip = async (charB64, bvhText, name) => {
     hipsPos.push(tHips0.x + dh.x / tgt.scale.x, tHips0.y + dh.y / tgt.scale.y, tHips0.z + dh.z / tgt.scale.z);
     tgt.updateMatrixWorld(true);
     for (const [a, c] of CHAIN) {
-      if (a === 'Hips' || !tb[a] || !tb[c]) continue;
+      if (a === 'Hips' || a === 'Neck' || !tb[a] || !tb[c]) continue; // head keeps its rest angle on the neck (MoMask's head joint is unreliable)
       const sa = bb[a] || (a === 'Spine1' || a === 'Spine2' ? null : null), sc2 = bb[c];
       let dir;
       if (sa && sc2) dir = wp(sc2).sub(wp(sa));
       else if (/Spine/.test(a)) dir = wp(bb.Neck).sub(wp(spineB)); // missing spine segments follow the whole spine
       else continue;
-      if (dir.lengthSq() < 1e-10) continue; dir.normalize();
+      if (dir.lengthSq() < 1e-10) continue; dir.normalize(); if (corr[a]) dir.applyQuaternion(corr[a]);
       tgt.updateMatrixWorld(true);
       const d0 = wp(tb[c]).sub(wp(tb[a])).normalize();
       const q = new THREE.Quaternion().setFromUnitVectors(d0, dir), wq = tb[a].getWorldQuaternion(new THREE.Quaternion()), pq2 = tb[a].parent.getWorldQuaternion(new THREE.Quaternion());
